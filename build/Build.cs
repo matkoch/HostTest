@@ -72,7 +72,7 @@ class Build : NukeBuild
 
             Log.Logger = new LoggerConfiguration()
                 .WriteTo.Console(outputTemplate: "{Timestamp:HH:mm:ss} [{Level:u3}] {Message}{NewLine}{Exception}",
-                    theme: Theme)
+                    theme: AnsiConsoleTheme.Code)
                 .MinimumLevel.Verbose()
                 .CreateLogger();
 
@@ -161,7 +161,5 @@ class Build : NukeBuild
         public CustomAnsiConsoleTheme([NotNull] IReadOnlyDictionary<ConsoleThemeStyle, string> styles) : base(styles)
         {
         }
-
-        public override bool CanBuffer => false;
     }
 }
