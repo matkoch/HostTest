@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using Nuke.Common;
 using Nuke.Common.CI;
 using Nuke.Common.CI.AppVeyor;
@@ -53,7 +54,7 @@ class Build : NukeBuild
             const string Esc = "\u001b[";
             const string Reset = "\u001b[0m";
 
-            for (var i = 0; i < 200; i++)
+            for (var i = 0; i < 110; i++)
             {
                 Console.Write($"{Esc}{i}m{i}{Reset} ");
                 Console.Write($"{Esc}{i};1m{i};1{Reset} ");
@@ -86,7 +87,25 @@ class Build : NukeBuild
             Log.Information("Information");
             Log.Warning(new Exception("message"), "warning");
             Log.Error(new Exception("message"), "error");
+
+            try
+            {
+                var methodInfo = GetType().GetMethod(nameof(Throwing), BindingFlags.Static | BindingFlags.Public);
+                methodInfo.Invoke(null, new object[0]);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, string.Empty);
+            }
+
         });
+
+
+    public static void Throwing()
+    {
+        throw new Exception("foo");
+    }
+
 
     public AnsiConsoleTheme Theme =>
         Host switch
