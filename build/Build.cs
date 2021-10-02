@@ -63,21 +63,34 @@ class Build : NukeBuild
             const string Esc = "\u001b[";
             const string Reset = "\u001b[0m";
 
-            for (var i = 0; i < 110; i++)
+            for (var i = 0; i < 255; i++)
             {
-                Console.Write($"{Esc}{i}m{i}{Reset} ");
-                Console.Write($"{Esc}{i};1m{i};1{Reset} ");
-                Console.Write($"{Esc}{i};2m{i};2{Reset} ");
-                if (i % 10 == 0)
+                Console.Write($"{Esc}38;5;{i}m{i}{Reset}");
+                if (i % 50 == 0)
                     Console.WriteLine();
             }
 
-            for (var i = 0; i < 250; i++)
-                Console.Write($"{Esc}38;5;{i}m{i}{Reset} ");
-
             Log.Logger = new LoggerConfiguration()
                 .WriteTo.Console(outputTemplate: "{Timestamp:HH:mm:ss} [{Level:u3}] {Message}{NewLine}{Exception}",
-                    theme: Theme,
+                    theme: new CustomAnsiConsoleTheme(new Dictionary<ConsoleThemeStyle, string>
+                    {
+                        [ConsoleThemeStyle.Text] = string.Empty,
+                        [ConsoleThemeStyle.SecondaryText] = "\u001B[90m",
+                        [ConsoleThemeStyle.TertiaryText] = "\u001B[90m", // timestamp
+                        [ConsoleThemeStyle.Name] = "\u001b[34m",
+                        [ConsoleThemeStyle.Invalid] = "\u001b[35m",
+                        [ConsoleThemeStyle.Null] = "\u001b[33m",
+                        [ConsoleThemeStyle.Number] = "\u001b[33m",
+                        [ConsoleThemeStyle.String] = "\u001b[33m",
+                        [ConsoleThemeStyle.Boolean] = "\u001b[33m",
+                        [ConsoleThemeStyle.Scalar] = "\u001b[33m",
+                        [ConsoleThemeStyle.LevelVerbose] = "\u001B[38;5;8m",
+                        [ConsoleThemeStyle.LevelDebug] = string.Empty,
+                        [ConsoleThemeStyle.LevelInformation] = "\u001B[38;5;50m",
+                        [ConsoleThemeStyle.LevelWarning] = "\u001B[38;5;214m",
+                        [ConsoleThemeStyle.LevelError] = "\u001B[38;5;196m",
+                        [ConsoleThemeStyle.LevelFatal] = "\u001B[38;5;231m\u001B[48;5;9m"
+                    }),
                     applyThemeToRedirectedOutput: true)
                 .MinimumLevel.Verbose()
                 .CreateLogger();
