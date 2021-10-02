@@ -8,6 +8,7 @@ using Nuke.Common.CI;
 using Nuke.Common.CI.AppVeyor;
 using Nuke.Common.CI.AzurePipelines;
 using Nuke.Common.CI.GitHubActions;
+using Nuke.Common.CI.GitLab;
 using Nuke.Common.CI.TeamCity;
 using Nuke.Common.Execution;
 using Nuke.Common.IO;
@@ -15,13 +16,10 @@ using Nuke.Common.ProjectModel;
 using Nuke.Common.Tooling;
 using Nuke.Common.Utilities.Collections;
 using Serilog;
-using Serilog.Core;
-using Serilog.Events;
 using Serilog.Sinks.SystemConsole.Themes;
 using static Nuke.Common.EnvironmentInfo;
 using static Nuke.Common.IO.FileSystemTasks;
 using static Nuke.Common.IO.PathConstruction;
-using Logger = Nuke.Common.Logger;
 
 [CheckBuildProjectConfigurations]
 [AppVeyor(
@@ -52,20 +50,37 @@ class Build : NukeBuild
     ///   - Microsoft VSCode           https://nuke.build/vscode
     public static int Main() => Execute<Build>(x => x.Compile);
 
+    Target Variables => _ => _
+        .Executes(() =>
+        {
+            EnvironmentInfo.Variables.OrderBy(x => x.Key).ForEach(x => Console.WriteLine($"{x.Key} = {x.Value}"));
+        });
+
     Target Compile => _ => _
         .Executes(() =>
         {
-            var loggingLevelSwitch = new LoggingLevelSwitch();
+            const string Esc = "\u001b[";
+            const string Reset = "\u001b[0m";
+
+            for (var i = 0; i < 110; i++)
+            {
+                Console.Write($"{Esc}{i}m{i}{Reset} ");
+                Console.Write($"{Esc}{i};1m{i};1{Reset} ");
+                Console.Write($"{Esc}{i};2m{i};2{Reset} ");
+                if (i % 10 == 0)
+                    Console.WriteLine();
+            }
+
+            for (var i = 0; i < 250; i++)
+                Console.Write($"{Esc}38;5;{i}m{i}{Reset} ");
+
             Log.Logger = new LoggerConfiguration()
-                .WriteTo.Console(
-                    outputTemplate: "{Timestamp:HH:mm:ss} [{Level:u3}] {Message}{NewLine}{Exception}",
+                .WriteTo.Console(outputTemplate: "{Timestamp:HH:mm:ss} [{Level:u3}] {Message}{NewLine}{Exception}",
                     theme: Theme,
-                    applyThemeToRedirectedOutput: true,
-                    levelSwitch: loggingLevelSwitch)
+                    applyThemeToRedirectedOutput: true)
                 .MinimumLevel.Verbose()
                 .CreateLogger();
 
-            Variables.OrderBy(x => x.Key).ForEach(x => Console.WriteLine($"{x.Key} = {x.Value}"));
 
             Logger.Trace("Trace");
             Logger.Normal("Normal");
@@ -83,18 +98,7 @@ class Build : NukeBuild
                 "bluu", new { Foo = "bar", Bar = new { Foo = 1, Bar = true } });
             Log.Error(new Exception("message"), "Ah, there you are!{Boolean} {Integer} {String} {@Object}", true, 1,
                 "bluu", new { Foo = "bar", Bar = new { Foo = 1, Bar = true } });
-
-            loggingLevelSwitch.MinimumLevel = LogEventLevel.Warning;
-
-            Log.Verbose("Ah, there you are!{Boolean} {Integer} {String} {@Object}", true, 1, "bluu",
-                new { Foo = "bar", Bar = new { Foo = 1, Bar = true } });
-            Log.Debug("Ah, there you are!{Boolean} {Integer} {String} {@Object}", true, 1, "bluu",
-                new { Foo = "bar", Bar = new { Foo = 1, Bar = true } });
-            Log.Information("Ah, there \u001b[36;1m you are!{Boolean} {Integer} {String} {@Object}", true, 1, "bluu",
-                new { Foo = "bar", Bar = new { Foo = 1, Bar = true } });
-            Log.Warning(new Exception("message"), "Ah, there you are!{Boolean} {Integer} {String} {@Object}", true, 1,
-                "bluu", new { Foo = "bar", Bar = new { Foo = 1, Bar = true } });
-            Log.Error(new Exception("message"), "Ah, there you are!{Boolean} {Integer} {String} {@Object}", true, 1,
+            Log.Fatal(new Exception("message"), "Ah, there you are!{Boolean} {Integer} {String} {@Object}", true, 1,
                 "bluu", new { Foo = "bar", Bar = new { Foo = 1, Bar = true } });
 
             try
@@ -122,7 +126,7 @@ class Build : NukeBuild
         {
             AzurePipelines => new CustomAnsiConsoleTheme(new Dictionary<ConsoleThemeStyle, string>
             {
-                [ConsoleThemeStyle.Text] = "\u001b[36;1m",
+                [ConsoleThemeStyle.Text] = string.Empty,
                 [ConsoleThemeStyle.SecondaryText] = "\u001B[90m",
                 [ConsoleThemeStyle.TertiaryText] = "\u001B[90m", // timestamp
                 [ConsoleThemeStyle.Name] = "\u001b[34m",
@@ -138,6 +142,82 @@ class Build : NukeBuild
                 [ConsoleThemeStyle.LevelWarning] = "\u001b[33;1m",
                 [ConsoleThemeStyle.LevelError] = "\u001B[31;1m",
                 [ConsoleThemeStyle.LevelFatal] = "\u001B[41;1m"
+            }),
+            TeamCity => new CustomAnsiConsoleTheme(new Dictionary<ConsoleThemeStyle, string>
+            {
+                [ConsoleThemeStyle.Text] = string.Empty,
+                [ConsoleThemeStyle.SecondaryText] = "\u001B[90m",
+                [ConsoleThemeStyle.TertiaryText] = "\u001B[90m", // timestamp
+                [ConsoleThemeStyle.Name] = "\u001b[34m",
+                [ConsoleThemeStyle.Invalid] = "\u001b[35m",
+                [ConsoleThemeStyle.Null] = "\u001b[33m",
+                [ConsoleThemeStyle.Number] = "\u001b[33m",
+                [ConsoleThemeStyle.String] = "\u001b[33m",
+                [ConsoleThemeStyle.Boolean] = "\u001b[33m",
+                [ConsoleThemeStyle.Scalar] = "\u001b[33m",
+                [ConsoleThemeStyle.LevelVerbose] = "\u001B[90m",
+                [ConsoleThemeStyle.LevelDebug] = "\u001B[98m",
+                [ConsoleThemeStyle.LevelInformation] = "\u001b[36m",
+                [ConsoleThemeStyle.LevelWarning] = "\u001b[33m",
+                [ConsoleThemeStyle.LevelError] = "\u001B[31m",
+                [ConsoleThemeStyle.LevelFatal] = "\u001B[41m"
+            }),
+            GitHubActions => new CustomAnsiConsoleTheme(new Dictionary<ConsoleThemeStyle, string>
+            {
+                [ConsoleThemeStyle.Text] = string.Empty,
+                [ConsoleThemeStyle.SecondaryText] = "\u001B[90m",
+                [ConsoleThemeStyle.TertiaryText] = "\u001B[90m", // timestamp
+                [ConsoleThemeStyle.Name] = "\u001b[34m",
+                [ConsoleThemeStyle.Invalid] = "\u001b[35m",
+                [ConsoleThemeStyle.Null] = "\u001b[33m",
+                [ConsoleThemeStyle.Number] = "\u001b[33m",
+                [ConsoleThemeStyle.String] = "\u001b[33m",
+                [ConsoleThemeStyle.Boolean] = "\u001b[33m",
+                [ConsoleThemeStyle.Scalar] = "\u001b[33m",
+                [ConsoleThemeStyle.LevelVerbose] = "\u001B[90m",
+                [ConsoleThemeStyle.LevelDebug] = "\u001B[98m",
+                [ConsoleThemeStyle.LevelInformation] = "\u001b[36m",
+                [ConsoleThemeStyle.LevelWarning] = "\u001b[33m",
+                [ConsoleThemeStyle.LevelError] = "\u001B[31m",
+                [ConsoleThemeStyle.LevelFatal] = "\u001B[41m"
+            }),
+            AppVeyor => new CustomAnsiConsoleTheme(new Dictionary<ConsoleThemeStyle, string>
+            {
+                [ConsoleThemeStyle.Text] = string.Empty,
+                [ConsoleThemeStyle.SecondaryText] = "\u001B[90m",
+                [ConsoleThemeStyle.TertiaryText] = "\u001B[90m", // timestamp
+                [ConsoleThemeStyle.Name] = "\u001b[34m",
+                [ConsoleThemeStyle.Invalid] = "\u001b[35m",
+                [ConsoleThemeStyle.Null] = "\u001b[33m",
+                [ConsoleThemeStyle.Number] = "\u001b[33m",
+                [ConsoleThemeStyle.String] = "\u001b[33m",
+                [ConsoleThemeStyle.Boolean] = "\u001b[33m",
+                [ConsoleThemeStyle.Scalar] = "\u001b[33m",
+                [ConsoleThemeStyle.LevelVerbose] = "\u001B[90m",
+                [ConsoleThemeStyle.LevelDebug] = "\u001B[98m",
+                [ConsoleThemeStyle.LevelInformation] = "\u001b[36m",
+                [ConsoleThemeStyle.LevelWarning] = "\u001b[33m",
+                [ConsoleThemeStyle.LevelError] = "\u001B[31m",
+                [ConsoleThemeStyle.LevelFatal] = "\u001B[41m"
+            }),
+            GitLab => new CustomAnsiConsoleTheme(new Dictionary<ConsoleThemeStyle, string>
+            {
+                [ConsoleThemeStyle.Text] = string.Empty,
+                [ConsoleThemeStyle.SecondaryText] = "\u001B[90m",
+                [ConsoleThemeStyle.TertiaryText] = "\u001B[90m", // timestamp
+                [ConsoleThemeStyle.Name] = "\u001b[34m",
+                [ConsoleThemeStyle.Invalid] = "\u001b[35m",
+                [ConsoleThemeStyle.Null] = "\u001b[33m",
+                [ConsoleThemeStyle.Number] = "\u001b[33m",
+                [ConsoleThemeStyle.String] = "\u001b[33m",
+                [ConsoleThemeStyle.Boolean] = "\u001b[33m",
+                [ConsoleThemeStyle.Scalar] = "\u001b[33m",
+                [ConsoleThemeStyle.LevelVerbose] = "\u001B[90m",
+                [ConsoleThemeStyle.LevelDebug] = "\u001B[98m",
+                [ConsoleThemeStyle.LevelInformation] = "\u001b[36m",
+                [ConsoleThemeStyle.LevelWarning] = "\u001b[33m",
+                [ConsoleThemeStyle.LevelError] = "\u001B[31m",
+                [ConsoleThemeStyle.LevelFatal] = "\u001B[41m"
             }),
             _ => new CustomAnsiConsoleTheme(new Dictionary<ConsoleThemeStyle, string>
             {
