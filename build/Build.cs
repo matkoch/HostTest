@@ -159,7 +159,7 @@ class Build : NukeBuild
                 [ConsoleThemeStyle.LevelVerbose] = "\u001B[90m",
                 [ConsoleThemeStyle.LevelDebug] = "\u001B[98m",
                 [ConsoleThemeStyle.LevelInformation] = "\u001b[36m",
-                [ConsoleThemeStyle.LevelWarning] = "\u001B[38;5;136m",
+                [ConsoleThemeStyle.LevelWarning] = "\u001B[38;5;172m",
                 [ConsoleThemeStyle.LevelError] = "\u001B[31m",
                 [ConsoleThemeStyle.LevelFatal] = "\u001B[41m"
             }),
