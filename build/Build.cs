@@ -52,23 +52,7 @@ class Build : NukeBuild
     Target Compile => _ => _
         .Executes(() =>
         {
-            const string Esc = "\u001b[";
-            const string Reset = "\u001b[0m";
-
-            for (var i = 0; i < 110; i++)
-            {
-                Console.Write($"{Esc}{i}m{i}{Reset} ");
-                Console.Write($"{Esc}{i};1m{i};1{Reset} ");
-                Console.Write($"{Esc}{i};2m{i};2{Reset} ");
-                if (i % 10 == 0)
-                    Console.WriteLine();
-            }
-
-            for (var i = 0; i < 250; i++)
-            {
-                //"\u001B[38;5;0079m"
-                Console.Write($"{Esc}38;5;{i}m{i}{Reset} ");
-            }
+            Environment.SetEnvironmentVariable("TERM", "xterm-256color");
 
             Log.Logger = new LoggerConfiguration()
                 .WriteTo.Console(outputTemplate: "{Timestamp:HH:mm:ss} [{Level:u3}] {Message}{NewLine}{Exception}",
