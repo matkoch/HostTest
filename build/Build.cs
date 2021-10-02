@@ -15,10 +15,13 @@ using Nuke.Common.ProjectModel;
 using Nuke.Common.Tooling;
 using Nuke.Common.Utilities.Collections;
 using Serilog;
+using Serilog.Core;
+using Serilog.Events;
 using Serilog.Sinks.SystemConsole.Themes;
 using static Nuke.Common.EnvironmentInfo;
 using static Nuke.Common.IO.FileSystemTasks;
 using static Nuke.Common.IO.PathConstruction;
+using Logger = Nuke.Common.Logger;
 
 [CheckBuildProjectConfigurations]
 [AppVeyor(
@@ -52,12 +55,13 @@ class Build : NukeBuild
     Target Compile => _ => _
         .Executes(() =>
         {
-
+            var loggingLevelSwitch = new LoggingLevelSwitch();
             Log.Logger = new LoggerConfiguration()
                 .WriteTo.Console(
                     outputTemplate: "{Timestamp:HH:mm:ss} [{Level:u3}] {Message}{NewLine}{Exception}",
                     theme: Theme,
-                    applyThemeToRedirectedOutput: true)
+                    applyThemeToRedirectedOutput: true,
+                    levelSwitch: loggingLevelSwitch)
                 .MinimumLevel.Verbose()
                 .CreateLogger();
 
@@ -68,6 +72,19 @@ class Build : NukeBuild
             Logger.Info("Info");
             Logger.Warn("Warn");
             Logger.Error("Error");
+
+            Log.Verbose("Ah, there you are!{Boolean} {Integer} {String} {@Object}", true, 1, "bluu",
+                new { Foo = "bar", Bar = new { Foo = 1, Bar = true } });
+            Log.Debug("Ah, there you are!{Boolean} {Integer} {String} {@Object}", true, 1, "bluu",
+                new { Foo = "bar", Bar = new { Foo = 1, Bar = true } });
+            Log.Information("Ah, there \u001b[36;1m you are!{Boolean} {Integer} {String} {@Object}", true, 1, "bluu",
+                new { Foo = "bar", Bar = new { Foo = 1, Bar = true } });
+            Log.Warning(new Exception("message"), "Ah, there you are!{Boolean} {Integer} {String} {@Object}", true, 1,
+                "bluu", new { Foo = "bar", Bar = new { Foo = 1, Bar = true } });
+            Log.Error(new Exception("message"), "Ah, there you are!{Boolean} {Integer} {String} {@Object}", true, 1,
+                "bluu", new { Foo = "bar", Bar = new { Foo = 1, Bar = true } });
+
+            loggingLevelSwitch.MinimumLevel = LogEventLevel.Warning;
 
             Log.Verbose("Ah, there you are!{Boolean} {Integer} {String} {@Object}", true, 1, "bluu",
                 new { Foo = "bar", Bar = new { Foo = 1, Bar = true } });
