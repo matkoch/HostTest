@@ -58,21 +58,20 @@ class Build : NukeBuild
             {
                 Console.Write($"{Esc}{i}m{i}{Reset} ");
                 Console.Write($"{Esc}{i};1m{i};1{Reset} ");
-                Console.Write($"{Esc}{i};2m{i};1{Reset} ");
-                Console.Write($"{Esc}{i};3m{i};1{Reset} ");
-                Console.Write($"{Esc}{i};4m{i};1{Reset} ");
-                Console.Write($"{Esc}{i};5m{i};1{Reset} ");
+                Console.Write($"{Esc}{i};2m{i};2{Reset} ");
                 if (i % 10 == 0)
                     Console.WriteLine();
             }
 
             for (var i = 0; i < 250; i++)
-            {//"\u001B[38;5;0079m"
+            {
+                //"\u001B[38;5;0079m"
                 Console.Write($"{Esc}38;5;{i}m{i}{Reset} ");
             }
 
             Log.Logger = new LoggerConfiguration()
-                .WriteTo.Console(outputTemplate: "[{Timestamp:HH:mm:ss}|{Level:u3}] {Message}{NewLine}{Exception}", theme: Theme)
+                .WriteTo.Console(outputTemplate: "{Timestamp:HH:mm:ss} [{Level:u3}] {Message}{NewLine}{Exception}",
+                    theme: Theme)
                 .MinimumLevel.Verbose()
                 .CreateLogger();
 
@@ -82,11 +81,16 @@ class Build : NukeBuild
             Logger.Warn("Warn");
             Logger.Error("Error");
 
-            Log.Verbose("Verbose");
-            Log.Debug("Debug");
-            Log.Information("Information");
-            Log.Warning(new Exception("message"), "warning");
-            Log.Error(new Exception("message"), "error");
+            Log.Verbose("Ah, there you are!{Boolean} {Integer} {String} {@Object}", true, 1, "bluu",
+                new { Foo = "bar", Bar = new { Foo = 1, Bar = true } });
+            Log.Debug("Ah, there you are!{Boolean} {Integer} {String} {@Object}", true, 1, "bluu",
+                new { Foo = "bar", Bar = new { Foo = 1, Bar = true } });
+            Log.Information("Ah, there you are!{Boolean} {Integer} {String} {@Object}", true, 1, "bluu",
+                new { Foo = "bar", Bar = new { Foo = 1, Bar = true } });
+            Log.Warning(new Exception("message"), "Ah, there you are!{Boolean} {Integer} {String} {@Object}", true, 1,
+                "bluu", new { Foo = "bar", Bar = new { Foo = 1, Bar = true } });
+            Log.Error(new Exception("message"), "Ah, there you are!{Boolean} {Integer} {String} {@Object}", true, 1,
+                "bluu", new { Foo = "bar", Bar = new { Foo = 1, Bar = true } });
 
             try
             {
@@ -98,6 +102,7 @@ class Build : NukeBuild
                 Log.Error(ex, string.Empty);
             }
 
+            Environment.Exit(0);
         });
 
 
@@ -110,24 +115,43 @@ class Build : NukeBuild
     public AnsiConsoleTheme Theme =>
         Host switch
         {
+            AzurePipelines => new AnsiConsoleTheme(new Dictionary<ConsoleThemeStyle, string>
+            {
+                [ConsoleThemeStyle.Text] = "",
+                [ConsoleThemeStyle.SecondaryText] = "\u001B[90m",
+                [ConsoleThemeStyle.TertiaryText] = "\u001B[90m", // timestamp
+                [ConsoleThemeStyle.Name] = "\u001b[34m",
+                [ConsoleThemeStyle.Invalid] = "\u001b[35m",
+                [ConsoleThemeStyle.Null] = "\u001b[33m",
+                [ConsoleThemeStyle.Number] = "\u001b[33m",
+                [ConsoleThemeStyle.String] = "\u001b[33m",
+                [ConsoleThemeStyle.Boolean] = "\u001b[33m",
+                [ConsoleThemeStyle.Scalar] = "\u001b[33m",
+                [ConsoleThemeStyle.LevelVerbose] = "\u001B[90m",
+                [ConsoleThemeStyle.LevelDebug] = "\u001B[97m",
+                [ConsoleThemeStyle.LevelInformation] = "\u001b[36m",
+                [ConsoleThemeStyle.LevelWarning] = "\u001b[33m",
+                [ConsoleThemeStyle.LevelError] = "\u001B[31m",
+                [ConsoleThemeStyle.LevelFatal] = "\u001B[41m"
+            }),
             _ => new AnsiConsoleTheme(new Dictionary<ConsoleThemeStyle, string>
             {
-                [ConsoleThemeStyle.Text] = "\u001b[96;1m",
-                [ConsoleThemeStyle.SecondaryText] = "\u001B[38;5;0246m",
-                [ConsoleThemeStyle.TertiaryText] = "\u001B[38;5;0242m",
-                [ConsoleThemeStyle.Invalid] = "\u001B[33;1m",
-                [ConsoleThemeStyle.Null] = "\u001B[38;5;0038m",
-                [ConsoleThemeStyle.Name] = "\u001B[38;5;0081m",
-                [ConsoleThemeStyle.String] = "\u001B[38;5;0216m",
-                [ConsoleThemeStyle.Number] = "\u001B[38;5;151m",
-                [ConsoleThemeStyle.Boolean] = "\u001B[38;5;0038m",
-                [ConsoleThemeStyle.Scalar] = "\u001B[38;5;0079m",
-                [ConsoleThemeStyle.LevelVerbose] = "\u001B[37m",
-                [ConsoleThemeStyle.LevelDebug] = "\u001B[37m",
-                [ConsoleThemeStyle.LevelInformation] = "\u001b[96;1m",
-                [ConsoleThemeStyle.LevelWarning] = "\u001b[93;1m",
-                [ConsoleThemeStyle.LevelError] = "\u001B[38;5;0197m\u001B[48;5;0238m",
-                [ConsoleThemeStyle.LevelFatal] = "\u001B[38;5;0197m\u001B[48;5;0238m"
+                [ConsoleThemeStyle.Text] = "",
+                [ConsoleThemeStyle.SecondaryText] = "\u001B[90m",
+                [ConsoleThemeStyle.TertiaryText] = "\u001B[90m", // timestamp
+                [ConsoleThemeStyle.Name] = "\u001b[34m",
+                [ConsoleThemeStyle.Invalid] = "\u001b[35m",
+                [ConsoleThemeStyle.Null] = "\u001b[33m",
+                [ConsoleThemeStyle.Number] = "\u001b[33m",
+                [ConsoleThemeStyle.String] = "\u001b[33m",
+                [ConsoleThemeStyle.Boolean] = "\u001b[33m",
+                [ConsoleThemeStyle.Scalar] = "\u001b[33m",
+                [ConsoleThemeStyle.LevelVerbose] = "\u001B[90m",
+                [ConsoleThemeStyle.LevelDebug] = "\u001B[97m",
+                [ConsoleThemeStyle.LevelInformation] = "\u001b[96m",
+                [ConsoleThemeStyle.LevelWarning] = "\u001b[93m",
+                [ConsoleThemeStyle.LevelError] = "\u001B[91m",
+                [ConsoleThemeStyle.LevelFatal] = "\u001B[101m"
             })
         };
 }
