@@ -117,7 +117,7 @@ class Build : NukeBuild
         {
             AzurePipelines => new AnsiConsoleTheme(new Dictionary<ConsoleThemeStyle, string>
             {
-                [ConsoleThemeStyle.Text] = "",
+                [ConsoleThemeStyle.Text] = "\u001b[36;1m",
                 [ConsoleThemeStyle.SecondaryText] = "\u001B[90m",
                 [ConsoleThemeStyle.TertiaryText] = "\u001B[90m", // timestamp
                 [ConsoleThemeStyle.Name] = "\u001b[34m",
