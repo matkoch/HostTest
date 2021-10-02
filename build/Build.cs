@@ -129,10 +129,10 @@ class Build : NukeBuild
                 [ConsoleThemeStyle.Scalar] = "\u001b[33m",
                 [ConsoleThemeStyle.LevelVerbose] = "\u001B[90m",
                 [ConsoleThemeStyle.LevelDebug] = "\u001B[97m",
-                [ConsoleThemeStyle.LevelInformation] = "\u001b[36m",
-                [ConsoleThemeStyle.LevelWarning] = "\u001b[33m",
-                [ConsoleThemeStyle.LevelError] = "\u001B[31m",
-                [ConsoleThemeStyle.LevelFatal] = "\u001B[41m"
+                [ConsoleThemeStyle.LevelInformation] = "\u001b[36;1m",
+                [ConsoleThemeStyle.LevelWarning] = "\u001b[33;1m",
+                [ConsoleThemeStyle.LevelError] = "\u001B[31;1m",
+                [ConsoleThemeStyle.LevelFatal] = "\u001B[41;1m"
             }),
             _ => new AnsiConsoleTheme(new Dictionary<ConsoleThemeStyle, string>
             {
