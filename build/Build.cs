@@ -55,20 +55,31 @@ class Build : NukeBuild
 
             for (var i = 0; i < 200; i++)
             {
-                Console.Write($"{Esc}{i}m{i}{Reset}  ");
-                Console.Write($"{Esc}{i};1m{i};1{Reset}  ");
-                Console.Write($"{Esc}{i};2m{i};1{Reset}  ");
-                Console.Write($"{Esc}{i};3m{i};1{Reset}  ");
-                Console.Write($"{Esc}{i};4m{i};1{Reset}  ");
-                Console.Write($"{Esc}{i};5m{i};1{Reset}  ");
+                Console.Write($"{Esc}{i}m{i}{Reset} ");
+                Console.Write($"{Esc}{i};1m{i};1{Reset} ");
+                Console.Write($"{Esc}{i};2m{i};1{Reset} ");
+                Console.Write($"{Esc}{i};3m{i};1{Reset} ");
+                Console.Write($"{Esc}{i};4m{i};1{Reset} ");
+                Console.Write($"{Esc}{i};5m{i};1{Reset} ");
                 if (i % 10 == 0)
                     Console.WriteLine();
             }
 
+            for (var i = 0; i < 250; i++)
+            {//"\u001B[38;5;0079m"
+                Console.Write($"{Esc}38;5;{i}m{i}{Reset} ");
+            }
+
             Log.Logger = new LoggerConfiguration()
-                .WriteTo.Console(outputTemplate: "[{Timestamp:HH:mm:ss}|{Level:u3}] {Message}{NewLine}{Exception}")
+                .WriteTo.Console(outputTemplate: "[{Timestamp:HH:mm:ss}|{Level:u3}] {Message}{NewLine}{Exception}", theme: Theme)
                 .MinimumLevel.Verbose()
                 .CreateLogger();
+
+            Logger.Trace("Trace");
+            Logger.Normal("Normal");
+            Logger.Info("Info");
+            Logger.Warn("Warn");
+            Logger.Error("Error");
 
             Log.Verbose("Verbose");
             Log.Debug("Debug");
@@ -80,7 +91,7 @@ class Build : NukeBuild
     public AnsiConsoleTheme Theme =>
         Host switch
         {
-            AppVeyor => new AnsiConsoleTheme(new Dictionary<ConsoleThemeStyle, string>
+            _ => new AnsiConsoleTheme(new Dictionary<ConsoleThemeStyle, string>
             {
                 [ConsoleThemeStyle.Text] = "\u001b[96;1m",
                 [ConsoleThemeStyle.SecondaryText] = "\u001B[38;5;0246m",
