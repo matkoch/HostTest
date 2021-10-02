@@ -85,7 +85,7 @@ class Build : NukeBuild
                 new { Foo = "bar", Bar = new { Foo = 1, Bar = true } });
             Log.Debug("Ah, there you are!{Boolean} {Integer} {String} {@Object}", true, 1, "bluu",
                 new { Foo = "bar", Bar = new { Foo = 1, Bar = true } });
-            Log.Information("Ah, there you are!{Boolean} {Integer} {String} {@Object}", true, 1, "bluu",
+            Log.Information("Ah, there \u001b[36;1m you are!{Boolean} {Integer} {String} {@Object}", true, 1, "bluu",
                 new { Foo = "bar", Bar = new { Foo = 1, Bar = true } });
             Log.Warning(new Exception("message"), "Ah, there you are!{Boolean} {Integer} {String} {@Object}", true, 1,
                 "bluu", new { Foo = "bar", Bar = new { Foo = 1, Bar = true } });
