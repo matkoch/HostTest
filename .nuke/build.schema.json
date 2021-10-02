@@ -63,7 +63,8 @@
           "items": {
             "type": "string",
             "enum": [
-              "Compile"
+              "Compile",
+              "Variables"
             ]
           }
         },
@@ -73,7 +74,8 @@
           "items": {
             "type": "string",
             "enum": [
-              "Compile"
+              "Compile",
+              "Variables"
             ]
           }
         },
