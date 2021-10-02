@@ -76,6 +76,8 @@ class Build : NukeBuild
                 .MinimumLevel.Verbose()
                 .CreateLogger();
 
+            Variables.OrderBy(x => x.Key).ForEach(x => Console.WriteLine($"{x.Key} = {x.Value}"));
+
             Logger.Trace("Trace");
             Logger.Normal("Normal");
             Logger.Info("Info");
