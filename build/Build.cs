@@ -65,7 +65,8 @@ class Build : NukeBuild
 
             for (var i = 0; i < 255; i++)
             {
-                Console.Write($"{Esc}38;5;{i}m{i}{Reset}");
+                var code = i.ToString().PadLeft(3, ' ');
+                Console.Write($"{Esc}38;5;{code}m{code}{Reset} ");
                 if (i % 50 == 0)
                     Console.WriteLine();
             }
