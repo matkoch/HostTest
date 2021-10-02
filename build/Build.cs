@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using JetBrains.Annotations;
 using Nuke.Common;
 using Nuke.Common.CI;
 using Nuke.Common.CI.AppVeyor;
@@ -115,7 +116,7 @@ class Build : NukeBuild
     public AnsiConsoleTheme Theme =>
         Host switch
         {
-            AzurePipelines => new AnsiConsoleTheme(new Dictionary<ConsoleThemeStyle, string>
+            AzurePipelines => new CustomAnsiConsoleTheme(new Dictionary<ConsoleThemeStyle, string>
             {
                 [ConsoleThemeStyle.Text] = "\u001b[36;1m",
                 [ConsoleThemeStyle.SecondaryText] = "\u001B[90m",
@@ -134,7 +135,7 @@ class Build : NukeBuild
                 [ConsoleThemeStyle.LevelError] = "\u001B[31;1m",
                 [ConsoleThemeStyle.LevelFatal] = "\u001B[41;1m"
             }),
-            _ => new AnsiConsoleTheme(new Dictionary<ConsoleThemeStyle, string>
+            _ => new CustomAnsiConsoleTheme(new Dictionary<ConsoleThemeStyle, string>
             {
                 [ConsoleThemeStyle.Text] = "",
                 [ConsoleThemeStyle.SecondaryText] = "\u001B[90m",
@@ -154,4 +155,13 @@ class Build : NukeBuild
                 [ConsoleThemeStyle.LevelFatal] = "\u001B[101m"
             })
         };
+
+    public class CustomAnsiConsoleTheme : AnsiConsoleTheme
+    {
+        public CustomAnsiConsoleTheme([NotNull] IReadOnlyDictionary<ConsoleThemeStyle, string> styles) : base(styles)
+        {
+        }
+
+        public override bool CanBuffer => false;
+    }
 }
