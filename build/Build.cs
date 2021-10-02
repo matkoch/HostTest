@@ -52,11 +52,12 @@ class Build : NukeBuild
     Target Compile => _ => _
         .Executes(() =>
         {
-            Environment.SetEnvironmentVariable("TERM", "xterm-256color");
 
             Log.Logger = new LoggerConfiguration()
-                .WriteTo.Console(outputTemplate: "{Timestamp:HH:mm:ss} [{Level:u3}] {Message}{NewLine}{Exception}",
-                    theme: Theme)
+                .WriteTo.Console(
+                    outputTemplate: "{Timestamp:HH:mm:ss} [{Level:u3}] {Message}{NewLine}{Exception}",
+                    theme: Theme,
+                    applyThemeToRedirectedOutput: true)
                 .MinimumLevel.Verbose()
                 .CreateLogger();
 
