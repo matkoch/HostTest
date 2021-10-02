@@ -31,7 +31,8 @@ using static Nuke.Common.IO.PathConstruction;
     AzurePipelinesImage.MacOsLatest,
     AzurePipelinesImage.WindowsLatest,
     AzurePipelinesImage.UbuntuLatest,
-    InvokedTargets = new[] { nameof(Compile) })]
+    InvokedTargets = new[] { nameof(Compile) },
+    CacheKeyFiles = new string[0])]
 [TeamCity(
     VcsTriggeredTargets = new[] { nameof(Compile) })]
 class Build : NukeBuild
