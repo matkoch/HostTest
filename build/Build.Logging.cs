@@ -1,15 +1,20 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
 using Nuke.Common;
+using Nuke.Common.CI;
 using Nuke.Common.CI.AppVeyor;
 using Nuke.Common.CI.AzurePipelines;
 using Nuke.Common.CI.GitHubActions;
 using Nuke.Common.CI.GitLab;
 using Nuke.Common.CI.TeamCity;
 using Nuke.Common.Execution;
+using Nuke.Common.IO;
 using Nuke.Common.Utilities;
+using Nuke.Common.Utilities.Collections;
 using Serilog;
 using Serilog.Core;
 using Serilog.Events;
@@ -164,8 +169,8 @@ partial class Build
     public static string OutputTemplate =>
         Host switch
         {
-            TeamCity => "[{Level:u3}] {Message}{NewLine}{Exception}",
-            _ => "{Timestamp:HH:mm:ss.fff} [{Level:u3}] {Message}{NewLine}{Exception}"
+            TeamCity => "[{Level:u3}] {Message:l}{NewLine}{Exception}",
+            _ => "{Timestamp:HH:mm:ss.fff} [{Level:u3}] {Message:l}{NewLine}{Exception}"
         };
 
     public interface IExtendedColorTheme
@@ -280,11 +285,20 @@ partial class Build
 
         public ConfigureLoggingAttribute()
         {
+            var configurationId = EnvironmentInfo.GetParameter<string>(BuildServerConfigurationGenerationAttributeBase.ConfigurationParameterName);
+            if (configurationId != null)
+                return;
+
+            TemporaryDirectory.GlobFiles("build.*.log").OrderByDescending(x => x.ToString()).Skip(5)
+                .ForEach(FileSystemTasks.DeleteFile);
+
             var loggingLevelSwitch = new LoggingLevelSwitch(LogEventLevel.Debug);
             var buildLogFile = TemporaryDirectory / "build.log";
-            // if (File.Exists(buildLogFile))
-            //     File.Delete(buildLogFile);
-
+            if (File.Exists(buildLogFile))
+            {
+                using var filestream = File.OpenWrite(buildLogFile);
+                filestream.SetLength(0);
+            }
 
             Log.Logger = new LoggerConfiguration()
                 .Enrich.With<TargetEnricher>()
@@ -296,7 +310,11 @@ partial class Build
                 .WriteTo.File(
                     path: buildLogFile,
                     outputTemplate:
-                    "{Timestamp:HH:mm:ss.fff} | {Level:u1} | {Target,15} | {Message}{NewLine}{@Exception}")
+                    "{Timestamp:HH:mm:ss.fff} | {Level:u1} | {Target,15} | {Message:l}{NewLine}{@Exception}")
+                .WriteTo.File(
+                    path: Path.ChangeExtension(buildLogFile, $".{DateTime.Now:s}.log"),
+                    outputTemplate:
+                    "{Level:u1} | {Target,15} | {Message:l}{NewLine}{@Exception}")
                 // .WriteTo.DelegatingTextSink(
                 //     x => HighSeverityLogEvents.Add(x),
                 //     outputTemplate: "{Target} ({Level:u3}): {Message}",
@@ -318,7 +336,7 @@ partial class Build
         {
             Log.Logger = new LoggerConfiguration()
                 .WriteTo.Console(
-                    outputTemplate: "[{Level:u3}] {Target}: {Message}{NewLine}",
+                    outputTemplate: "[{Level:u3}] {Target}: {Message:l}{NewLine}",
                     theme: Theme,
                     applyThemeToRedirectedOutput: true)
                 .CreateLogger();
