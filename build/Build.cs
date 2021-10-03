@@ -52,11 +52,6 @@ class Build : NukeBuild
             EnvironmentInfo.Variables.OrderBy(x => x.Key).ForEach(x => Console.WriteLine($"{x.Key} = {x.Value}"));
         });
 
-    private string GetAnsiCode(params string[] codes)
-    {
-        return $"\u001b[{codes.Join(";")}m";
-    }
-
     Target Colors => _ => _
         .Executes(() =>
         {
@@ -103,19 +98,26 @@ class Build : NukeBuild
             }
         });
 
-    public ConsoleTheme DefaultAnsi256ColorTheme => new AnsiConsoleTheme(
+
+    private string GetAnsiCode(params string[] codes)
+    {
+        return $"\u001b[{codes.Join(";")}m";
+    }
+
+    public ConsoleTheme DefaultAnsi256ColorTheme => new ExtendedAnsiConsoleTheme(
+        "\u001B[92;1m",
         new Dictionary<ConsoleThemeStyle, string>
         {
             [ConsoleThemeStyle.Text] = "\u001B[39m",
             [ConsoleThemeStyle.SecondaryText] = "\u001B[38;5;247m",
             [ConsoleThemeStyle.TertiaryText] = "\u001B[38;5;247m",
             [ConsoleThemeStyle.Name] = "\u001B[39;1m",
-            [ConsoleThemeStyle.Invalid] = "\u001b[91m",
-            [ConsoleThemeStyle.Null] = "\u001b[38;5;207m",
-            [ConsoleThemeStyle.Number] = "\u001b[38;5;207m",
-            [ConsoleThemeStyle.String] = "\u001b[38;5;207m",
-            [ConsoleThemeStyle.Boolean] = "\u001b[38;5;207m",
-            [ConsoleThemeStyle.Scalar] = "\u001b[38;5;207m",
+            [ConsoleThemeStyle.Invalid] = "\u001b[38;5;207m",
+            [ConsoleThemeStyle.Null] = "\u001b[38;5;45m",
+            [ConsoleThemeStyle.Number] = "\u001b[38;5;45m",
+            [ConsoleThemeStyle.String] = "\u001b[38;5;45m",
+            [ConsoleThemeStyle.Boolean] = "\u001b[38;5;45m",
+            [ConsoleThemeStyle.Scalar] = "\u001b[38;5;45m",
             [ConsoleThemeStyle.LevelVerbose] = "\u001B[90;1m",
             [ConsoleThemeStyle.LevelDebug] = "\u001B[39;1m",
             [ConsoleThemeStyle.LevelInformation] = "\u001B[38;5;50;1m",
@@ -124,7 +126,8 @@ class Build : NukeBuild
             [ConsoleThemeStyle.LevelFatal] = "\u001B[38;5;231;1m\u001B[48;5;196m"
         });
 
-    public ConsoleTheme DefaultSystemColorTheme => new SystemConsoleTheme(
+    public ConsoleTheme DefaultSystemColorTheme => new ExtendedSystemConsoleTheme(
+        new SystemConsoleThemeStyle {Foreground = ConsoleColor.Green},
         new Dictionary<ConsoleThemeStyle, SystemConsoleThemeStyle>
         {
             [ConsoleThemeStyle.Text] = new(),
@@ -145,19 +148,20 @@ class Build : NukeBuild
             [ConsoleThemeStyle.LevelFatal] = new() { Foreground = ConsoleColor.White, Background = ConsoleColor.Red }
         });
 
-    public ConsoleTheme AppVeyorColorTheme => new CustomAnsiConsoleTheme(
+    public ConsoleTheme AppVeyorColorTheme => new ExtendedAnsiConsoleTheme(
+        "\u001B[92;1m",
         new Dictionary<ConsoleThemeStyle, string>
         {
             [ConsoleThemeStyle.Text] = string.Empty,
             [ConsoleThemeStyle.SecondaryText] = "\u001B[37;2m",
             [ConsoleThemeStyle.TertiaryText] = "\u001B[37;2m", // timestamp
             [ConsoleThemeStyle.Name] = "\u001b[37;1m",
-            [ConsoleThemeStyle.Invalid] = "\u001b[95m",
-            [ConsoleThemeStyle.Null] = "\u001b[34m",
-            [ConsoleThemeStyle.Number] = "\u001b[34m",
-            [ConsoleThemeStyle.String] = "\u001b[34m",
-            [ConsoleThemeStyle.Boolean] = "\u001b[34m",
-            [ConsoleThemeStyle.Scalar] = "\u001b[34m",
+            [ConsoleThemeStyle.Invalid] = "\u001b[95;1m",
+            [ConsoleThemeStyle.Null] = "\u001b[34;1m",
+            [ConsoleThemeStyle.Number] = "\u001b[34;1m",
+            [ConsoleThemeStyle.String] = "\u001b[34;1m",
+            [ConsoleThemeStyle.Boolean] = "\u001b[34;1m",
+            [ConsoleThemeStyle.Scalar] = "\u001b[34;1m",
             [ConsoleThemeStyle.LevelVerbose] = "\u001B[37;2m",
             [ConsoleThemeStyle.LevelDebug] = "\u001B[98;1m",
             [ConsoleThemeStyle.LevelInformation] = "\u001b[36;1m",
@@ -166,19 +170,20 @@ class Build : NukeBuild
             [ConsoleThemeStyle.LevelFatal] = "\u001B[41;1m"
         });
 
-    public ConsoleTheme AzurePipelinesColorTheme => new CustomAnsiConsoleTheme(
+    public ConsoleTheme AzurePipelinesColorTheme => new ExtendedAnsiConsoleTheme(
+        "\u001B[32;1m",
         new Dictionary<ConsoleThemeStyle, string>
         {
             [ConsoleThemeStyle.Text] = string.Empty,
             [ConsoleThemeStyle.SecondaryText] = "\u001B[90m",
             [ConsoleThemeStyle.TertiaryText] = "\u001B[90m", // timestamp
             [ConsoleThemeStyle.Name] = "\u001b[37;1m",
-            [ConsoleThemeStyle.Invalid] = "\u001b[91m",
-            [ConsoleThemeStyle.Null] = "\u001b[35m",
-            [ConsoleThemeStyle.Number] = "\u001b[35m",
-            [ConsoleThemeStyle.String] = "\u001b[35m",
-            [ConsoleThemeStyle.Boolean] = "\u001b[35m",
-            [ConsoleThemeStyle.Scalar] = "\u001b[35m",
+            [ConsoleThemeStyle.Invalid] = "\u001b[91;1m",
+            [ConsoleThemeStyle.Null] = "\u001b[34;1m",
+            [ConsoleThemeStyle.Number] = "\u001b[34;1m",
+            [ConsoleThemeStyle.String] = "\u001b[34;1m",
+            [ConsoleThemeStyle.Boolean] = "\u001b[34;1m",
+            [ConsoleThemeStyle.Scalar] = "\u001b[34;1m",
             [ConsoleThemeStyle.LevelVerbose] = "\u001B[90m",
             [ConsoleThemeStyle.LevelDebug] = "\u001B[97m",
             [ConsoleThemeStyle.LevelInformation] = "\u001b[36;1m",
@@ -192,18 +197,18 @@ class Build : NukeBuild
         .Executes(() =>
         {
             Log.Logger = new LoggerConfiguration()
-                .WriteTo.Console(outputTemplate: "{Timestamp:HH:mm:ss} [{Level:u3}] {Message}{NewLine}{Exception}",
+                .WriteTo.Console(
+                    outputTemplate: OutputTemplate,
                     theme: Theme,
                     applyThemeToRedirectedOutput: true)
                 .MinimumLevel.Verbose()
                 .CreateLogger();
 
 
-            Logger.Trace("Trace");
-            Logger.Normal("Normal");
-            Logger.Info("Info");
-            Logger.Warn("Warn");
-            Logger.Error("Error");
+            ExtendedTheme.WriteNormal("Normal");
+            ExtendedTheme.WriteSuccess("Info");
+            ExtendedTheme.WriteWarning("Warn");
+            ExtendedTheme.WriteError("Error");
 
             Log.Verbose("Ah, there you are!{Boolean} {Integer} {String} {@Object}", true, 1, "bluu",
                 new { Foo = "bar", Bar = new { Foo = 1, Bar = true } });
@@ -251,10 +256,117 @@ class Build : NukeBuild
                 : DefaultSystemColorTheme
         };
 
-    public class CustomAnsiConsoleTheme : AnsiConsoleTheme
-    {
-        public CustomAnsiConsoleTheme([NotNull] IReadOnlyDictionary<ConsoleThemeStyle, string> styles) : base(styles)
+    public IExtendedColorTheme ExtendedTheme => (IExtendedColorTheme) Theme;
+
+    public string OutputTemplate =>
+        Host switch
         {
+            TeamCity => "[{Level:u3}] {Message}{NewLine}{Exception}",
+            _ => "{Timestamp:HH:mm:ss.fff} [{Level:u3}] {Message}{NewLine}{Exception}"
+        };
+
+    public interface IExtendedColorTheme
+    {
+        void WriteNormal(string text);
+        void WriteSuccess(string text);
+        void WriteWarning(string text);
+        void WriteError(string text);
+    }
+
+    public class ExtendedSystemConsoleTheme : SystemConsoleTheme, IExtendedColorTheme
+    {
+        readonly SystemConsoleThemeStyle _successStyle;
+        readonly IReadOnlyDictionary<ConsoleThemeStyle, SystemConsoleThemeStyle> _styles;
+
+        public ExtendedSystemConsoleTheme(
+            SystemConsoleThemeStyle successStyle,
+            IReadOnlyDictionary<ConsoleThemeStyle, SystemConsoleThemeStyle> styles)
+            : base(styles)
+        {
+            _successStyle = successStyle;
+            _styles = styles;
+        }
+
+        public void WriteNormal(string text)
+        {
+            Write(text, _styles[ConsoleThemeStyle.LevelDebug]);
+        }
+
+        public void WriteSuccess(string text)
+        {
+            Write(text, _successStyle);
+        }
+
+        public void WriteWarning(string text)
+        {
+            Write(text, _styles[ConsoleThemeStyle.LevelWarning]);
+        }
+
+        public void WriteError(string text)
+        {
+            Write(text, _styles[ConsoleThemeStyle.LevelError]);
+        }
+
+        private void Write(string text, SystemConsoleThemeStyle style)
+        {
+            var previousForeground = Console.ForegroundColor;
+            var previousBackground = Console.BackgroundColor;
+
+            using (DelegateDisposable.CreateBracket(
+                () =>
+                {
+                    Console.ForegroundColor = style.Foreground ?? previousForeground;
+                    Console.ForegroundColor = style.Background ?? previousBackground;
+                },
+                () =>
+                {
+                    Console.ForegroundColor = previousForeground;
+                    Console.BackgroundColor = previousBackground;
+                }))
+            {
+                Console.WriteLine(text);
+            }
+        }
+    }
+
+    public class ExtendedAnsiConsoleTheme : AnsiConsoleTheme, IExtendedColorTheme
+    {
+        readonly string _successCode;
+        readonly IReadOnlyDictionary<ConsoleThemeStyle, string> _styles;
+        private const string AnsiStyleReset = "\u001B[0m";
+
+        public ExtendedAnsiConsoleTheme(
+            string successCode,
+            IReadOnlyDictionary<ConsoleThemeStyle, string> styles)
+            : base(styles)
+        {
+            _successCode = successCode;
+            _styles = styles;
+        }
+
+        public void WriteNormal(string text)
+        {
+            Write(text, _styles[ConsoleThemeStyle.LevelDebug]);
+        }
+
+        public void WriteSuccess(string text)
+        {
+            Write(text, _successCode);
+        }
+
+        public void WriteWarning(string text)
+        {
+            Write(text, _styles[ConsoleThemeStyle.LevelWarning]);
+        }
+
+        public void WriteError(string text)
+        {
+            Write(text, _styles[ConsoleThemeStyle.LevelError]);
+        }
+
+        private void Write(string text, string code)
+        {
+            Console.WriteLine($"{code}{text}{AnsiStyleReset}");
         }
     }
 }
