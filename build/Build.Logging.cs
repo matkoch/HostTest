@@ -29,7 +29,7 @@ partial class Build
         .DependsOn(Colors, Variables)
         .Executes(() =>
         {
-            ExtendedTheme.WriteNormal("Normal");
+            ExtendedTheme.WriteDebug("Normal");
             ExtendedTheme.WriteSuccess("Info");
             ExtendedTheme.WriteWarning("Warn");
             ExtendedTheme.WriteError("Error");
@@ -66,12 +66,12 @@ partial class Build
             [ConsoleThemeStyle.SecondaryText] = "\u001B[38;5;247m",
             [ConsoleThemeStyle.TertiaryText] = "\u001B[38;5;247m",
             [ConsoleThemeStyle.Name] = "\u001B[39;1m",
-            [ConsoleThemeStyle.Invalid] = "\u001b[38;5;207m",
-            [ConsoleThemeStyle.Null] = "\u001b[38;5;45m",
-            [ConsoleThemeStyle.Number] = "\u001b[38;5;45m",
-            [ConsoleThemeStyle.String] = "\u001b[38;5;45m",
-            [ConsoleThemeStyle.Boolean] = "\u001b[38;5;45m",
-            [ConsoleThemeStyle.Scalar] = "\u001b[38;5;45m",
+            [ConsoleThemeStyle.Invalid] = "\u001b[38;5;207;1m",
+            [ConsoleThemeStyle.Null] = "\u001b[38;5;45;1m",
+            [ConsoleThemeStyle.Number] = "\u001b[38;5;45;1m",
+            [ConsoleThemeStyle.String] = "\u001b[38;5;45;1m",
+            [ConsoleThemeStyle.Boolean] = "\u001b[38;5;45;1m",
+            [ConsoleThemeStyle.Scalar] = "\u001b[38;5;45;1m",
             [ConsoleThemeStyle.LevelVerbose] = "\u001B[90;1m",
             [ConsoleThemeStyle.LevelDebug] = "\u001B[39;1m",
             [ConsoleThemeStyle.LevelInformation] = "\u001B[38;5;50;1m",
@@ -108,7 +108,7 @@ partial class Build
         {
             [ConsoleThemeStyle.Text] = string.Empty,
             [ConsoleThemeStyle.SecondaryText] = "\u001B[37;2m",
-            [ConsoleThemeStyle.TertiaryText] = "\u001B[37;2m", // timestamp
+            [ConsoleThemeStyle.TertiaryText] = "\u001B[37;2m",
             [ConsoleThemeStyle.Name] = "\u001b[37;1m",
             [ConsoleThemeStyle.Invalid] = "\u001b[95;1m",
             [ConsoleThemeStyle.Null] = "\u001b[34;1m",
@@ -130,7 +130,7 @@ partial class Build
         {
             [ConsoleThemeStyle.Text] = string.Empty,
             [ConsoleThemeStyle.SecondaryText] = "\u001B[90m",
-            [ConsoleThemeStyle.TertiaryText] = "\u001B[90m", // timestamp
+            [ConsoleThemeStyle.TertiaryText] = "\u001B[90m",
             [ConsoleThemeStyle.Name] = "\u001b[37;1m",
             [ConsoleThemeStyle.Invalid] = "\u001b[91;1m",
             [ConsoleThemeStyle.Null] = "\u001b[34;1m",
@@ -138,8 +138,8 @@ partial class Build
             [ConsoleThemeStyle.String] = "\u001b[34;1m",
             [ConsoleThemeStyle.Boolean] = "\u001b[34;1m",
             [ConsoleThemeStyle.Scalar] = "\u001b[34;1m",
-            [ConsoleThemeStyle.LevelVerbose] = "\u001B[90m",
-            [ConsoleThemeStyle.LevelDebug] = "\u001B[97m",
+            [ConsoleThemeStyle.LevelVerbose] = "\u001B[90;1m",
+            [ConsoleThemeStyle.LevelDebug] = "\u001B[97;1m",
             [ConsoleThemeStyle.LevelInformation] = "\u001b[36;1m",
             [ConsoleThemeStyle.LevelWarning] = "\u001b[33;1m",
             [ConsoleThemeStyle.LevelError] = "\u001B[31;1m",
@@ -175,8 +175,8 @@ partial class Build
 
     public interface IExtendedColorTheme
     {
-        void WriteNormal(string text);
         void WriteSuccess(string text);
+        void WriteDebug(string text);
         void WriteWarning(string text);
         void WriteError(string text);
     }
@@ -195,14 +195,14 @@ partial class Build
             _styles = styles;
         }
 
-        public void WriteNormal(string text)
-        {
-            Write(text, _styles[ConsoleThemeStyle.LevelDebug]);
-        }
-
         public void WriteSuccess(string text)
         {
             Write(text, _successStyle);
+        }
+
+        public void WriteDebug(string text)
+        {
+            Write(text, _styles[ConsoleThemeStyle.LevelDebug]);
         }
 
         public void WriteWarning(string text)
@@ -252,14 +252,14 @@ partial class Build
             _styles = styles;
         }
 
-        public void WriteNormal(string text)
-        {
-            Write(text, _styles[ConsoleThemeStyle.LevelDebug]);
-        }
-
         public void WriteSuccess(string text)
         {
             Write(text, _successCode);
+        }
+
+        public void WriteDebug(string text)
+        {
+            Write(text, _styles[ConsoleThemeStyle.LevelDebug]);
         }
 
         public void WriteWarning(string text)
@@ -281,7 +281,6 @@ partial class Build
     public class ConfigureLoggingAttribute : BuildExtensionAttributeBase, IOnTargetRunning, IOnBuildFinished
     {
         private static string Target;
-        private static List<string> HighSeverityLogEvents = new();
 
         public ConfigureLoggingAttribute()
         {
@@ -292,7 +291,7 @@ partial class Build
             TemporaryDirectory.GlobFiles("build.*.log").OrderByDescending(x => x.ToString()).Skip(5)
                 .ForEach(FileSystemTasks.DeleteFile);
 
-            var loggingLevelSwitch = new LoggingLevelSwitch(LogEventLevel.Debug);
+            var loggingLevelSwitch = new LoggingLevelSwitch(LogEventLevel.Verbose);
             var buildLogFile = TemporaryDirectory / "build.log";
             if (File.Exists(buildLogFile))
             {
@@ -315,10 +314,6 @@ partial class Build
                     path: Path.ChangeExtension(buildLogFile, $".{DateTime.Now:s}.log"),
                     outputTemplate:
                     "{Level:u1} | {Target,15} | {Message:l}{NewLine}{@Exception}")
-                // .WriteTo.DelegatingTextSink(
-                //     x => HighSeverityLogEvents.Add(x),
-                //     outputTemplate: "{Target} ({Level:u3}): {Message}",
-                //     restrictedToMinimumLevel: LogEventLevel.Warning)
                 .WriteTo.InMemory(
                     outputTemplate: "{Target} ({Level:u3}): {Message}",
                     restrictedToMinimumLevel: LogEventLevel.Warning)

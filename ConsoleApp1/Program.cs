@@ -13,23 +13,23 @@ namespace ConsoleApp1
             .Foreground(Color.Turquoise2)
             .Decoration(Decoration.Bold);
 
-        private static string Prompt(string icon, string prompt)
+        private static string PromptInput(string icon, string prompt)
         {
-            return Prompt<string>(icon, prompt);
+            return PromptInput<string>(icon, prompt);
         }
 
-        private static T Prompt<T>(string icon, string prompt)
+        private static T PromptInput<T>(string icon, string prompt)
         {
             AnsiConsole.Markup($":{icon}:  [bold turquoise2]{prompt}[/]:");
             return AnsiConsole.Ask<T>(string.Empty);
         }
 
-        private static bool Confirm(string icon, string prompt)
+        private static bool PromptConfirmation(string icon, string prompt)
         {
-            return Choice(icon, prompt, ("Yes", true), ("No", false));
+            return PromptSelection(icon, prompt, ("Yes", true), ("No", false));
         }
 
-        private static T Choice<T>(
+        private static T PromptSelection<T>(
             string icon,
             string prompt,
             params (string Description, T Value)[] choices)
@@ -46,7 +46,7 @@ namespace ConsoleApp1
             return selection;
         }
 
-        private static IReadOnlyList<T> MultiChoice<T>(
+        private static IReadOnlyList<T> PromptMultiSelection<T>(
             string icon,
             string prompt,
             params (string Description, T Value)[] choices)
@@ -65,17 +65,14 @@ namespace ConsoleApp1
 
         static void Main(string[] args)
         {
-            var key = Console.ReadKey(intercept: true);
-            Console.WriteLine(key.Key);
-            Console.WriteLine(key.Modifiers);
-            Console.WriteLine(key.KeyChar);
             var password = AnsiConsole.Prompt(
                 new TextPrompt<string>("Enter [green]password[/]")
                     .PromptStyle("red")
-                    .Secret());
-            var multiChoices = MultiChoice("label", "foo123", ("First", "a"), ("Second", "b"));
-            var choice1 = Choice("label", "fooo123", ("First", 1), ("Second", 2));
-            var projectName = Prompt("label", "Build Project Name");
+                .AddChoice("foo")
+                .AddChoice("bar"));
+            var multiChoices = PromptMultiSelection("label", "foo123", ("First", "a"), ("Second", "b"));
+            var choice1 = PromptSelection("label", "fooo123", ("First", 1), ("Second", 2));
+            var projectName = PromptInput("label", "Build Project Name");
 
 
             var integer = AnsiConsole.Ask<int>("Integer?");
