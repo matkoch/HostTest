@@ -4,23 +4,16 @@ using System.Linq;
 using System.Reflection;
 using JetBrains.Annotations;
 using Nuke.Common;
-using Nuke.Common.CI;
 using Nuke.Common.CI.AppVeyor;
 using Nuke.Common.CI.AzurePipelines;
 using Nuke.Common.CI.GitHubActions;
 using Nuke.Common.CI.GitLab;
 using Nuke.Common.CI.TeamCity;
 using Nuke.Common.Execution;
-using Nuke.Common.IO;
-using Nuke.Common.ProjectModel;
-using Nuke.Common.Tooling;
 using Nuke.Common.Utilities;
 using Nuke.Common.Utilities.Collections;
 using Serilog;
 using Serilog.Sinks.SystemConsole.Themes;
-using static Nuke.Common.EnvironmentInfo;
-using static Nuke.Common.IO.FileSystemTasks;
-using static Nuke.Common.IO.PathConstruction;
 
 [CheckBuildProjectConfigurations]
 [AppVeyor(
@@ -57,40 +50,81 @@ class Build : NukeBuild
             EnvironmentInfo.Variables.OrderBy(x => x.Key).ForEach(x => Console.WriteLine($"{x.Key} = {x.Value}"));
         });
 
-    Target Compile => _ => _
+    private string GetAnsiCode(params string[] codes)
+    {
+        return $"\u001b[{codes.Join(";")}m";
+    }
+
+    Target Colors => _ => _
         .Executes(() =>
         {
             const string Esc = "\u001b[";
             const string Reset = "\u001b[0m";
 
+            for (var i = 30; i < 47; i++)
+                Console.Write($"{Esc}{i}m{i}  {Reset} ");
+            for (var i = 90; i < 107; i++)
+                Console.Write($"{Esc}{i}m{i}  {Reset} ");
+            Console.WriteLine();
+            for (var i = 30; i < 47; i++)
+                Console.Write($"{Esc}{i};1m{i};1{Reset} ");
+            for (var i = 90; i < 107; i++)
+                Console.Write($"{Esc}{i};1m{i};1{Reset} ");
+            Console.WriteLine();
+            for (var i = 30; i < 47; i++)
+                Console.Write($"{Esc}{i};2m{i};2{Reset} ");
+            for (var i = 90; i < 107; i++)
+                Console.Write($"{Esc}{i};2m{i};2{Reset} ");
+            Console.WriteLine();
+            for (var i = 30; i < 47; i++)
+                Console.Write($"{Esc}{i};3m{i};2{Reset} ");
+            for (var i = 90; i < 107; i++)
+                Console.Write($"{Esc}{i};3m{i};2{Reset} ");
+            Console.WriteLine();
+
             for (var i = 0; i < 255; i++)
             {
-                var code = i.ToString().PadLeft(3, ' ');
+                var code = i.ToString().PadLeft(3, '0');
                 Console.Write($"{Esc}38;5;{code}m{code}{Reset} ");
-                if (i % 50 == 0)
+                if ((i + 1) % 16 == 0)
                     Console.WriteLine();
             }
+            Console.WriteLine();
+
+            for (var i = 0; i < 255; i++)
+            {
+                var code = i.ToString().PadLeft(3, '0');
+                Console.Write($"{Esc}38;5;{code};1m{code}{Reset} ");
+                if ((i + 1) % 16 == 0)
+                    Console.WriteLine();
+            }
+        });
+
+    Target Compile => _ => _
+        .DependsOn(Colors)
+        .Executes(() =>
+        {
 
             Log.Logger = new LoggerConfiguration()
                 .WriteTo.Console(outputTemplate: "{Timestamp:HH:mm:ss} [{Level:u3}] {Message}{NewLine}{Exception}",
                     theme: new CustomAnsiConsoleTheme(new Dictionary<ConsoleThemeStyle, string>
                     {
-                        [ConsoleThemeStyle.Text] = string.Empty,
+                        [ConsoleThemeStyle.Text] = "\u001B[39m",
                         [ConsoleThemeStyle.SecondaryText] = "\u001B[90m",
                         [ConsoleThemeStyle.TertiaryText] = "\u001B[90m", // timestamp
-                        [ConsoleThemeStyle.Name] = "\u001b[34m",
+                        [ConsoleThemeStyle.Name] = "\u001B[39;1m",
                         [ConsoleThemeStyle.Invalid] = "\u001b[35m",
-                        [ConsoleThemeStyle.Null] = "\u001b[33m",
-                        [ConsoleThemeStyle.Number] = "\u001b[33m",
-                        [ConsoleThemeStyle.String] = "\u001b[33m",
-                        [ConsoleThemeStyle.Boolean] = "\u001b[33m",
-                        [ConsoleThemeStyle.Scalar] = "\u001b[33m",
-                        [ConsoleThemeStyle.LevelVerbose] = "\u001B[38;5;8m",
-                        [ConsoleThemeStyle.LevelDebug] = string.Empty,
-                        [ConsoleThemeStyle.LevelInformation] = "\u001B[38;5;50m",
-                        [ConsoleThemeStyle.LevelWarning] = "\u001B[38;5;214m",
-                        [ConsoleThemeStyle.LevelError] = "\u001B[38;5;196m",
-                        [ConsoleThemeStyle.LevelFatal] = "\u001B[38;5;231m\u001B[48;5;9m"
+                        [ConsoleThemeStyle.Null] = "\u001b[38;5;207m",
+                        [ConsoleThemeStyle.Number] = "\u001b[38;5;207m",
+                        [ConsoleThemeStyle.String] = "\u001b[38;5;207m",
+                        [ConsoleThemeStyle.Boolean] = "\u001b[38;5;207m",
+                        [ConsoleThemeStyle.Scalar] = "\u001b[38;5;207m",
+                        [ConsoleThemeStyle.LevelVerbose] = "\u001B[90;1m",
+                        [ConsoleThemeStyle.LevelDebug] = "\u001B[39;1m",
+                        [ConsoleThemeStyle.LevelInformation] = "\u001B[38;5;50;1m",
+                        [ConsoleThemeStyle.LevelWarning] = "\u001B[38;5;214;1m",
+                        [ConsoleThemeStyle.LevelError] = "\u001B[38;5;196;1m",
+                        [ConsoleThemeStyle.LevelFatal] = "\u001B[38;5;231;1m\u001B[48;5;196m"
                     }),
                     applyThemeToRedirectedOutput: true)
                 .MinimumLevel.Verbose()
@@ -123,7 +157,7 @@ class Build : NukeBuild
             }
             catch (Exception ex)
             {
-                Log.Error(ex, string.Empty);
+                // Log.Error(ex, string.Empty);
             }
 
             Environment.Exit(0);

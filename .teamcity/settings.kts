@@ -23,9 +23,10 @@ import jetbrains.buildServer.configs.kotlin.v2018_1.vcs.*
 version = "2018.2"
 
 project {
+    buildType(Colors)
     buildType(Compile)
 
-    buildTypesOrder = arrayListOf(Compile)
+    buildTypesOrder = arrayListOf(Colors, Compile)
 
     params {
         select (
@@ -45,6 +46,31 @@ project {
             display = ParameterDisplay.HIDDEN)
     }
 }
+object Colors : BuildType({
+    name = "Colors"
+    vcs {
+        root(DslContext.settingsRoot)
+        cleanCheckout = true
+    }
+    steps {
+        exec {
+            path = "build.cmd"
+            arguments = "Colors --skip"
+            conditions { contains("teamcity.agent.jvm.os.name", "Windows") }
+        }
+        exec {
+            path = "build.sh"
+            arguments = "Colors --skip"
+            conditions { doesNotContain("teamcity.agent.jvm.os.name", "Windows") }
+        }
+    }
+    params {
+        text(
+            "teamcity.ui.runButton.caption",
+            "Colors",
+            display = ParameterDisplay.HIDDEN)
+    }
+})
 object Compile : BuildType({
     name = "Compile"
     vcs {
@@ -72,6 +98,12 @@ object Compile : BuildType({
     triggers {
         vcs {
             triggerRules = "+:**"
+        }
+    }
+    dependencies {
+        snapshot(Colors) {
+            onDependencyFailure = FailureAction.FAIL_TO_START
+            onDependencyCancel = FailureAction.CANCEL
         }
     }
 })
