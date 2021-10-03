@@ -110,7 +110,7 @@ class Build : NukeBuild
             [ConsoleThemeStyle.SecondaryText] = "\u001B[38;5;247m",
             [ConsoleThemeStyle.TertiaryText] = "\u001B[38;5;247m",
             [ConsoleThemeStyle.Name] = "\u001B[39;1m",
-            [ConsoleThemeStyle.Invalid] = "\u001b[35m",
+            [ConsoleThemeStyle.Invalid] = "\u001b[91m",
             [ConsoleThemeStyle.Null] = "\u001b[38;5;207m",
             [ConsoleThemeStyle.Number] = "\u001b[38;5;207m",
             [ConsoleThemeStyle.String] = "\u001b[38;5;207m",
@@ -131,7 +131,7 @@ class Build : NukeBuild
             [ConsoleThemeStyle.SecondaryText] = new() { Foreground = ConsoleColor.Gray },
             [ConsoleThemeStyle.TertiaryText] = new() { Foreground = ConsoleColor.Gray },
             [ConsoleThemeStyle.Name] = new() { Foreground = ConsoleColor.Blue },
-            [ConsoleThemeStyle.Invalid] = new() { Foreground = ConsoleColor.DarkYellow },
+            [ConsoleThemeStyle.Invalid] = new() { Foreground = ConsoleColor.DarkRed },
             [ConsoleThemeStyle.Null] = new() { Foreground = ConsoleColor.Magenta },
             [ConsoleThemeStyle.String] = new() { Foreground = ConsoleColor.Magenta },
             [ConsoleThemeStyle.Number] = new() { Foreground = ConsoleColor.Magenta },
@@ -152,18 +152,18 @@ class Build : NukeBuild
             [ConsoleThemeStyle.SecondaryText] = "\u001B[37;2m",
             [ConsoleThemeStyle.TertiaryText] = "\u001B[37;2m", // timestamp
             [ConsoleThemeStyle.Name] = "\u001b[37;1m",
-            [ConsoleThemeStyle.Invalid] = "\u001b[35m",
-            [ConsoleThemeStyle.Null] = "\u001b[33m",
-            [ConsoleThemeStyle.Number] = "\u001b[33m",
-            [ConsoleThemeStyle.String] = "\u001b[33m",
-            [ConsoleThemeStyle.Boolean] = "\u001b[33m",
-            [ConsoleThemeStyle.Scalar] = "\u001b[33m",
+            [ConsoleThemeStyle.Invalid] = "\u001b[95m",
+            [ConsoleThemeStyle.Null] = "\u001b[34m",
+            [ConsoleThemeStyle.Number] = "\u001b[34m",
+            [ConsoleThemeStyle.String] = "\u001b[34m",
+            [ConsoleThemeStyle.Boolean] = "\u001b[34m",
+            [ConsoleThemeStyle.Scalar] = "\u001b[34m",
             [ConsoleThemeStyle.LevelVerbose] = "\u001B[37;2m",
-            [ConsoleThemeStyle.LevelDebug] = "\u001B[98m",
-            [ConsoleThemeStyle.LevelInformation] = "\u001b[36m",
-            [ConsoleThemeStyle.LevelWarning] = "\u001b[33m",
-            [ConsoleThemeStyle.LevelError] = "\u001B[31m",
-            [ConsoleThemeStyle.LevelFatal] = "\u001B[41m"
+            [ConsoleThemeStyle.LevelDebug] = "\u001B[98;1m",
+            [ConsoleThemeStyle.LevelInformation] = "\u001b[36;1m",
+            [ConsoleThemeStyle.LevelWarning] = "\u001b[33;1m",
+            [ConsoleThemeStyle.LevelError] = "\u001B[31;1m",
+            [ConsoleThemeStyle.LevelFatal] = "\u001B[41;1m"
         });
 
     public ConsoleTheme AzurePipelinesColorTheme => new CustomAnsiConsoleTheme(
@@ -173,12 +173,12 @@ class Build : NukeBuild
             [ConsoleThemeStyle.SecondaryText] = "\u001B[90m",
             [ConsoleThemeStyle.TertiaryText] = "\u001B[90m", // timestamp
             [ConsoleThemeStyle.Name] = "\u001b[37;1m",
-            [ConsoleThemeStyle.Invalid] = "\u001b[35m",
-            [ConsoleThemeStyle.Null] = "\u001b[33m",
-            [ConsoleThemeStyle.Number] = "\u001b[33m",
-            [ConsoleThemeStyle.String] = "\u001b[33m",
-            [ConsoleThemeStyle.Boolean] = "\u001b[33m",
-            [ConsoleThemeStyle.Scalar] = "\u001b[33m",
+            [ConsoleThemeStyle.Invalid] = "\u001b[91m",
+            [ConsoleThemeStyle.Null] = "\u001b[35m",
+            [ConsoleThemeStyle.Number] = "\u001b[35m",
+            [ConsoleThemeStyle.String] = "\u001b[35m",
+            [ConsoleThemeStyle.Boolean] = "\u001b[35m",
+            [ConsoleThemeStyle.Scalar] = "\u001b[35m",
             [ConsoleThemeStyle.LevelVerbose] = "\u001B[90m",
             [ConsoleThemeStyle.LevelDebug] = "\u001B[97m",
             [ConsoleThemeStyle.LevelInformation] = "\u001b[36;1m",
@@ -243,6 +243,9 @@ class Build : NukeBuild
         {
             AzurePipelines => AzurePipelinesColorTheme,
             AppVeyor => AppVeyorColorTheme,
+            GitLab => DefaultAnsi256ColorTheme,
+            TeamCity => DefaultAnsi256ColorTheme,
+            GitHubActions => DefaultAnsi256ColorTheme,
             _ => Environment.GetEnvironmentVariable("TERM") is { } term && term.StartsWithOrdinalIgnoreCase("xterm")
                 ? DefaultAnsi256ColorTheme
                 : DefaultSystemColorTheme
