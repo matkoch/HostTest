@@ -32,9 +32,11 @@ using Serilog.Sinks.SystemConsole.Themes;
     AzurePipelinesImage.WindowsLatest,
     AzurePipelinesImage.UbuntuLatest,
     InvokedTargets = new[] { nameof(Compile) },
+    NonEntryTargets = new[] { nameof(Variables), nameof(Colors) },
     CacheKeyFiles = new string[0])]
 [TeamCity(
-    VcsTriggeredTargets = new[] { nameof(Compile) })]
+    VcsTriggeredTargets = new[] { nameof(Compile) },
+    NonEntryTargets = new[] { nameof(Variables), nameof(Colors) })]
 class Build : NukeBuild
 {
     /// Support plugins are available for:
@@ -89,6 +91,7 @@ class Build : NukeBuild
                 if ((i + 1) % 16 == 0)
                     Console.WriteLine();
             }
+
             Console.WriteLine();
 
             for (var i = 0; i < 255; i++)
@@ -101,10 +104,9 @@ class Build : NukeBuild
         });
 
     Target Compile => _ => _
-        .DependsOn(Colors)
+        .DependsOn(Colors, Variables)
         .Executes(() =>
         {
-
             Log.Logger = new LoggerConfiguration()
                 .WriteTo.Console(outputTemplate: "{Timestamp:HH:mm:ss} [{Level:u3}] {Message}{NewLine}{Exception}",
                     theme: new CustomAnsiConsoleTheme(new Dictionary<ConsoleThemeStyle, string>
