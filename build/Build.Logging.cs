@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using Nuke.Common;
 using Nuke.Common.CI.AppVeyor;
@@ -12,8 +13,10 @@ using Nuke.Common.Utilities;
 using Serilog;
 using Serilog.Core;
 using Serilog.Events;
+using Serilog.Formatting.Display;
 using Serilog.Sinks.InMemory;
 using Serilog.Sinks.SystemConsole.Themes;
+using Logger = Nuke.Common.Logger;
 
 partial class Build
 {
@@ -273,6 +276,7 @@ partial class Build
     public class ConfigureLoggingAttribute : BuildExtensionAttributeBase, IOnTargetRunning, IOnBuildFinished
     {
         private static string Target;
+        private static List<string> HighSeverityLogEvents = new();
 
         public ConfigureLoggingAttribute()
         {
@@ -293,6 +297,10 @@ partial class Build
                     path: buildLogFile,
                     outputTemplate:
                     "{Timestamp:HH:mm:ss.fff} | {Level:u1} | {Target,15} | {Message}{NewLine}{@Exception}")
+                // .WriteTo.DelegatingTextSink(
+                //     x => HighSeverityLogEvents.Add(x),
+                //     outputTemplate: "{Target} ({Level:u3}): {Message}",
+                //     restrictedToMinimumLevel: LogEventLevel.Warning)
                 .WriteTo.InMemory(
                     outputTemplate: "{Target} ({Level:u3}): {Message}",
                     restrictedToMinimumLevel: LogEventLevel.Warning)
@@ -308,13 +316,16 @@ partial class Build
 
         public void OnBuildFinished(NukeBuild build)
         {
-            foreach (var instanceLogEvent in InMemorySink.Instance.LogEvents)
-            {
-                if (instanceLogEvent.Level == LogEventLevel.Warning)
-                    ExtendedTheme.WriteWarning(instanceLogEvent.RenderMessage());
-                if (instanceLogEvent.Level == LogEventLevel.Error)
-                    ExtendedTheme.WriteError(instanceLogEvent.RenderMessage());
-            }
+            Log.Logger = new LoggerConfiguration()
+                .WriteTo.Console(
+                    outputTemplate: "[{Level:u3}] {Target}: {Message}{NewLine}",
+                    theme: Theme,
+                    applyThemeToRedirectedOutput: true)
+                .CreateLogger();
+
+            var nonEmptyLogEvents = InMemorySink.Instance.LogEvents.Where(x => !x.MessageTemplate.Text.IsNullOrEmpty());
+            foreach (var logEvent in nonEmptyLogEvents)
+                Log.Write(logEvent);
         }
 
         private class TargetEnricher : ILogEventEnricher
