@@ -103,31 +103,97 @@ class Build : NukeBuild
             }
         });
 
+    public ConsoleTheme DefaultAnsi256ColorTheme => new AnsiConsoleTheme(
+        new Dictionary<ConsoleThemeStyle, string>
+        {
+            [ConsoleThemeStyle.Text] = "\u001B[39m",
+            [ConsoleThemeStyle.SecondaryText] = "\u001B[38;5;247m",
+            [ConsoleThemeStyle.TertiaryText] = "\u001B[38;5;247m",
+            [ConsoleThemeStyle.Name] = "\u001B[39;1m",
+            [ConsoleThemeStyle.Invalid] = "\u001b[35m",
+            [ConsoleThemeStyle.Null] = "\u001b[38;5;207m",
+            [ConsoleThemeStyle.Number] = "\u001b[38;5;207m",
+            [ConsoleThemeStyle.String] = "\u001b[38;5;207m",
+            [ConsoleThemeStyle.Boolean] = "\u001b[38;5;207m",
+            [ConsoleThemeStyle.Scalar] = "\u001b[38;5;207m",
+            [ConsoleThemeStyle.LevelVerbose] = "\u001B[90;1m",
+            [ConsoleThemeStyle.LevelDebug] = "\u001B[39;1m",
+            [ConsoleThemeStyle.LevelInformation] = "\u001B[38;5;50;1m",
+            [ConsoleThemeStyle.LevelWarning] = "\u001B[38;5;214;1m",
+            [ConsoleThemeStyle.LevelError] = "\u001B[38;5;196;1m",
+            [ConsoleThemeStyle.LevelFatal] = "\u001B[38;5;231;1m\u001B[48;5;196m"
+        });
+
+    public ConsoleTheme DefaultSystemColorTheme => new SystemConsoleTheme(
+        new Dictionary<ConsoleThemeStyle, SystemConsoleThemeStyle>
+        {
+            [ConsoleThemeStyle.Text] = new(),
+            [ConsoleThemeStyle.SecondaryText] = new() { Foreground = ConsoleColor.Gray },
+            [ConsoleThemeStyle.TertiaryText] = new() { Foreground = ConsoleColor.Gray },
+            [ConsoleThemeStyle.Name] = new() { Foreground = ConsoleColor.Blue },
+            [ConsoleThemeStyle.Invalid] = new() { Foreground = ConsoleColor.DarkYellow },
+            [ConsoleThemeStyle.Null] = new() { Foreground = ConsoleColor.Magenta },
+            [ConsoleThemeStyle.String] = new() { Foreground = ConsoleColor.Magenta },
+            [ConsoleThemeStyle.Number] = new() { Foreground = ConsoleColor.Magenta },
+            [ConsoleThemeStyle.Boolean] = new() { Foreground = ConsoleColor.Magenta },
+            [ConsoleThemeStyle.Scalar] = new() { Foreground = ConsoleColor.Magenta },
+            [ConsoleThemeStyle.LevelVerbose] = new() { Foreground = ConsoleColor.Gray },
+            [ConsoleThemeStyle.LevelDebug] = new(),
+            [ConsoleThemeStyle.LevelInformation] = new() { Foreground = ConsoleColor.Cyan },
+            [ConsoleThemeStyle.LevelWarning] = new() { Foreground = ConsoleColor.Yellow },
+            [ConsoleThemeStyle.LevelError] = new() { Foreground = ConsoleColor.Red },
+            [ConsoleThemeStyle.LevelFatal] = new() { Foreground = ConsoleColor.White, Background = ConsoleColor.Red }
+        });
+
+    public ConsoleTheme AppVeyorColorTheme => new CustomAnsiConsoleTheme(
+        new Dictionary<ConsoleThemeStyle, string>
+        {
+            [ConsoleThemeStyle.Text] = string.Empty,
+            [ConsoleThemeStyle.SecondaryText] = "\u001B[90m",
+            [ConsoleThemeStyle.TertiaryText] = "\u001B[90m", // timestamp
+            [ConsoleThemeStyle.Name] = "\u001b[34m",
+            [ConsoleThemeStyle.Invalid] = "\u001b[35m",
+            [ConsoleThemeStyle.Null] = "\u001b[33m",
+            [ConsoleThemeStyle.Number] = "\u001b[33m",
+            [ConsoleThemeStyle.String] = "\u001b[33m",
+            [ConsoleThemeStyle.Boolean] = "\u001b[33m",
+            [ConsoleThemeStyle.Scalar] = "\u001b[33m",
+            [ConsoleThemeStyle.LevelVerbose] = "\u001B[90m",
+            [ConsoleThemeStyle.LevelDebug] = "\u001B[98m",
+            [ConsoleThemeStyle.LevelInformation] = "\u001b[36m",
+            [ConsoleThemeStyle.LevelWarning] = "\u001b[33m",
+            [ConsoleThemeStyle.LevelError] = "\u001B[31m",
+            [ConsoleThemeStyle.LevelFatal] = "\u001B[41m"
+        });
+
+    public ConsoleTheme AzurePipelinesColorTheme => new CustomAnsiConsoleTheme(
+        new Dictionary<ConsoleThemeStyle, string>
+        {
+            [ConsoleThemeStyle.Text] = string.Empty,
+            [ConsoleThemeStyle.SecondaryText] = "\u001B[90m",
+            [ConsoleThemeStyle.TertiaryText] = "\u001B[90m", // timestamp
+            [ConsoleThemeStyle.Name] = "\u001b[34m",
+            [ConsoleThemeStyle.Invalid] = "\u001b[35m",
+            [ConsoleThemeStyle.Null] = "\u001b[33m",
+            [ConsoleThemeStyle.Number] = "\u001b[33m",
+            [ConsoleThemeStyle.String] = "\u001b[33m",
+            [ConsoleThemeStyle.Boolean] = "\u001b[33m",
+            [ConsoleThemeStyle.Scalar] = "\u001b[33m",
+            [ConsoleThemeStyle.LevelVerbose] = "\u001B[90m",
+            [ConsoleThemeStyle.LevelDebug] = "\u001B[97m",
+            [ConsoleThemeStyle.LevelInformation] = "\u001b[36;1m",
+            [ConsoleThemeStyle.LevelWarning] = "\u001b[33;1m",
+            [ConsoleThemeStyle.LevelError] = "\u001B[31;1m",
+            [ConsoleThemeStyle.LevelFatal] = "\u001B[41;1m"
+        });
+
     Target Compile => _ => _
         .DependsOn(Colors, Variables)
         .Executes(() =>
         {
             Log.Logger = new LoggerConfiguration()
                 .WriteTo.Console(outputTemplate: "{Timestamp:HH:mm:ss} [{Level:u3}] {Message}{NewLine}{Exception}",
-                    theme: new CustomAnsiConsoleTheme(new Dictionary<ConsoleThemeStyle, string>
-                    {
-                        [ConsoleThemeStyle.Text] = "\u001B[39m",
-                        [ConsoleThemeStyle.SecondaryText] = "\u001B[90m",
-                        [ConsoleThemeStyle.TertiaryText] = "\u001B[90m", // timestamp
-                        [ConsoleThemeStyle.Name] = "\u001B[39;1m",
-                        [ConsoleThemeStyle.Invalid] = "\u001b[35m",
-                        [ConsoleThemeStyle.Null] = "\u001b[38;5;207m",
-                        [ConsoleThemeStyle.Number] = "\u001b[38;5;207m",
-                        [ConsoleThemeStyle.String] = "\u001b[38;5;207m",
-                        [ConsoleThemeStyle.Boolean] = "\u001b[38;5;207m",
-                        [ConsoleThemeStyle.Scalar] = "\u001b[38;5;207m",
-                        [ConsoleThemeStyle.LevelVerbose] = "\u001B[90;1m",
-                        [ConsoleThemeStyle.LevelDebug] = "\u001B[39;1m",
-                        [ConsoleThemeStyle.LevelInformation] = "\u001B[38;5;50;1m",
-                        [ConsoleThemeStyle.LevelWarning] = "\u001B[38;5;214;1m",
-                        [ConsoleThemeStyle.LevelError] = "\u001B[38;5;196;1m",
-                        [ConsoleThemeStyle.LevelFatal] = "\u001B[38;5;231;1m\u001B[48;5;196m"
-                    }),
+                    theme: Theme,
                     applyThemeToRedirectedOutput: true)
                 .MinimumLevel.Verbose()
                 .CreateLogger();
@@ -175,142 +241,11 @@ class Build : NukeBuild
     public ConsoleTheme Theme =>
         Host switch
         {
-            AzurePipelines => new CustomAnsiConsoleTheme(new Dictionary<ConsoleThemeStyle, string>
-            {
-                [ConsoleThemeStyle.Text] = string.Empty,
-                [ConsoleThemeStyle.SecondaryText] = "\u001B[90m",
-                [ConsoleThemeStyle.TertiaryText] = "\u001B[90m", // timestamp
-                [ConsoleThemeStyle.Name] = "\u001b[34m",
-                [ConsoleThemeStyle.Invalid] = "\u001b[35m",
-                [ConsoleThemeStyle.Null] = "\u001b[33m",
-                [ConsoleThemeStyle.Number] = "\u001b[33m",
-                [ConsoleThemeStyle.String] = "\u001b[33m",
-                [ConsoleThemeStyle.Boolean] = "\u001b[33m",
-                [ConsoleThemeStyle.Scalar] = "\u001b[33m",
-                [ConsoleThemeStyle.LevelVerbose] = "\u001B[90m",
-                [ConsoleThemeStyle.LevelDebug] = "\u001B[97m",
-                [ConsoleThemeStyle.LevelInformation] = "\u001b[36;1m",
-                [ConsoleThemeStyle.LevelWarning] = "\u001b[33;1m",
-                [ConsoleThemeStyle.LevelError] = "\u001B[31;1m",
-                [ConsoleThemeStyle.LevelFatal] = "\u001B[41;1m"
-            }),
-            TeamCity => new CustomAnsiConsoleTheme(new Dictionary<ConsoleThemeStyle, string>
-            {
-                [ConsoleThemeStyle.Text] = string.Empty,
-                [ConsoleThemeStyle.SecondaryText] = "\u001B[90m",
-                [ConsoleThemeStyle.TertiaryText] = "\u001B[90m", // timestamp
-                [ConsoleThemeStyle.Name] = "\u001b[34m",
-                [ConsoleThemeStyle.Invalid] = "\u001b[35m",
-                [ConsoleThemeStyle.Null] = "\u001b[33m",
-                [ConsoleThemeStyle.Number] = "\u001b[33m",
-                [ConsoleThemeStyle.String] = "\u001b[33m",
-                [ConsoleThemeStyle.Boolean] = "\u001b[33m",
-                [ConsoleThemeStyle.Scalar] = "\u001b[33m",
-                [ConsoleThemeStyle.LevelVerbose] = "\u001B[90m",
-                [ConsoleThemeStyle.LevelDebug] = "\u001B[98m",
-                [ConsoleThemeStyle.LevelInformation] = "\u001b[36m",
-                [ConsoleThemeStyle.LevelWarning] = "\u001B[38;5;172m",
-                [ConsoleThemeStyle.LevelError] = "\u001B[31m",
-                [ConsoleThemeStyle.LevelFatal] = "\u001B[41m"
-            }),
-            GitHubActions => new CustomAnsiConsoleTheme(new Dictionary<ConsoleThemeStyle, string>
-            {
-                [ConsoleThemeStyle.Text] = string.Empty,
-                [ConsoleThemeStyle.SecondaryText] = "\u001B[90m",
-                [ConsoleThemeStyle.TertiaryText] = "\u001B[90m", // timestamp
-                [ConsoleThemeStyle.Name] = "\u001b[34m",
-                [ConsoleThemeStyle.Invalid] = "\u001b[35m",
-                [ConsoleThemeStyle.Null] = "\u001b[33m",
-                [ConsoleThemeStyle.Number] = "\u001b[33m",
-                [ConsoleThemeStyle.String] = "\u001b[33m",
-                [ConsoleThemeStyle.Boolean] = "\u001b[33m",
-                [ConsoleThemeStyle.Scalar] = "\u001b[33m",
-                [ConsoleThemeStyle.LevelVerbose] = "\u001B[90m",
-                [ConsoleThemeStyle.LevelDebug] = "\u001B[98m",
-                [ConsoleThemeStyle.LevelInformation] = "\u001b[36m",
-                [ConsoleThemeStyle.LevelWarning] = "\u001b[33m",
-                [ConsoleThemeStyle.LevelError] = "\u001B[31m",
-                [ConsoleThemeStyle.LevelFatal] = "\u001B[41m"
-            }),
-            AppVeyor => new CustomAnsiConsoleTheme(new Dictionary<ConsoleThemeStyle, string>
-            {
-                [ConsoleThemeStyle.Text] = string.Empty,
-                [ConsoleThemeStyle.SecondaryText] = "\u001B[90m",
-                [ConsoleThemeStyle.TertiaryText] = "\u001B[90m", // timestamp
-                [ConsoleThemeStyle.Name] = "\u001b[34m",
-                [ConsoleThemeStyle.Invalid] = "\u001b[35m",
-                [ConsoleThemeStyle.Null] = "\u001b[33m",
-                [ConsoleThemeStyle.Number] = "\u001b[33m",
-                [ConsoleThemeStyle.String] = "\u001b[33m",
-                [ConsoleThemeStyle.Boolean] = "\u001b[33m",
-                [ConsoleThemeStyle.Scalar] = "\u001b[33m",
-                [ConsoleThemeStyle.LevelVerbose] = "\u001B[90m",
-                [ConsoleThemeStyle.LevelDebug] = "\u001B[98m",
-                [ConsoleThemeStyle.LevelInformation] = "\u001b[36m",
-                [ConsoleThemeStyle.LevelWarning] = "\u001b[33m",
-                [ConsoleThemeStyle.LevelError] = "\u001B[31m",
-                [ConsoleThemeStyle.LevelFatal] = "\u001B[41m"
-            }),
-            GitLab => new CustomAnsiConsoleTheme(new Dictionary<ConsoleThemeStyle, string>
-            {
-                [ConsoleThemeStyle.Text] = string.Empty,
-                [ConsoleThemeStyle.SecondaryText] = "\u001B[90m",
-                [ConsoleThemeStyle.TertiaryText] = "\u001B[90m", // timestamp
-                [ConsoleThemeStyle.Name] = "\u001b[34m",
-                [ConsoleThemeStyle.Invalid] = "\u001b[35m",
-                [ConsoleThemeStyle.Null] = "\u001b[33m",
-                [ConsoleThemeStyle.Number] = "\u001b[33m",
-                [ConsoleThemeStyle.String] = "\u001b[33m",
-                [ConsoleThemeStyle.Boolean] = "\u001b[33m",
-                [ConsoleThemeStyle.Scalar] = "\u001b[33m",
-                [ConsoleThemeStyle.LevelVerbose] = "\u001B[90m",
-                [ConsoleThemeStyle.LevelDebug] = "\u001B[98m",
-                [ConsoleThemeStyle.LevelInformation] = "\u001b[36m",
-                [ConsoleThemeStyle.LevelWarning] = "\u001b[33m",
-                [ConsoleThemeStyle.LevelError] = "\u001B[31m",
-                [ConsoleThemeStyle.LevelFatal] = "\u001B[41m"
-            }),
-            _ =>
-                Environment.GetEnvironmentVariable("TERM") is { } term && term.StartsWithOrdinalIgnoreCase("xterm")
-                    ? new CustomAnsiConsoleTheme(new Dictionary<ConsoleThemeStyle, string>
-                    {
-                        [ConsoleThemeStyle.Text] = string.Empty,
-                        [ConsoleThemeStyle.SecondaryText] = "\u001B[90m",
-                        [ConsoleThemeStyle.TertiaryText] = "\u001B[90m", // timestamp
-                        [ConsoleThemeStyle.Name] = "\u001b[34m",
-                        [ConsoleThemeStyle.Invalid] = "\u001b[35m",
-                        [ConsoleThemeStyle.Null] = "\u001b[33m",
-                        [ConsoleThemeStyle.Number] = "\u001b[33m",
-                        [ConsoleThemeStyle.String] = "\u001b[33m",
-                        [ConsoleThemeStyle.Boolean] = "\u001b[33m",
-                        [ConsoleThemeStyle.Scalar] = "\u001b[33m",
-                        [ConsoleThemeStyle.LevelVerbose] = "\u001B[90m",
-                        [ConsoleThemeStyle.LevelDebug] = string.Empty,
-                        [ConsoleThemeStyle.LevelInformation] = "\u001b[96m",
-                        [ConsoleThemeStyle.LevelWarning] = "\u001b[93m",
-                        [ConsoleThemeStyle.LevelError] = "\u001B[91m",
-                        [ConsoleThemeStyle.LevelFatal] = "\u001B[38;5;231m\u001B[48;5;9m"
-                    })
-                    : new SystemConsoleTheme(new Dictionary<ConsoleThemeStyle, SystemConsoleThemeStyle>
-                    {
-                        [ConsoleThemeStyle.Text] = new(),
-                        [ConsoleThemeStyle.SecondaryText] = new() { Foreground = ConsoleColor.Gray },
-                        [ConsoleThemeStyle.TertiaryText] = new() { Foreground = ConsoleColor.Gray },
-                        [ConsoleThemeStyle.Name] = new() { Foreground = ConsoleColor.Blue },
-                        [ConsoleThemeStyle.Invalid] = new() { Foreground = ConsoleColor.DarkYellow },
-                        [ConsoleThemeStyle.Null] = new() { Foreground = ConsoleColor.Magenta },
-                        [ConsoleThemeStyle.String] = new() { Foreground = ConsoleColor.Magenta },
-                        [ConsoleThemeStyle.Number] = new() { Foreground = ConsoleColor.Magenta },
-                        [ConsoleThemeStyle.Boolean] = new() { Foreground = ConsoleColor.Magenta },
-                        [ConsoleThemeStyle.Scalar] = new() { Foreground = ConsoleColor.Magenta },
-                        [ConsoleThemeStyle.LevelVerbose] = new() { Foreground = ConsoleColor.Gray },
-                        [ConsoleThemeStyle.LevelDebug] = new(),
-                        [ConsoleThemeStyle.LevelInformation] = new() { Foreground = ConsoleColor.Cyan },
-                        [ConsoleThemeStyle.LevelWarning] = new() { Foreground = ConsoleColor.Yellow },
-                        [ConsoleThemeStyle.LevelError] = new() { Foreground = ConsoleColor.Red },
-                        [ConsoleThemeStyle.LevelFatal] = new()
-                            { Foreground = ConsoleColor.White, Background = ConsoleColor.Red }
-                    })
+            AzurePipelines => AzurePipelinesColorTheme,
+            AppVeyor => AppVeyorColorTheme,
+            _ => Environment.GetEnvironmentVariable("TERM") is { } term && term.StartsWithOrdinalIgnoreCase("xterm")
+                ? DefaultAnsi256ColorTheme
+                : DefaultSystemColorTheme
         };
 
     public class CustomAnsiConsoleTheme : AnsiConsoleTheme
