@@ -21,57 +21,36 @@ stages:
     pool:
       vmImage: 'macOS-latest'
     jobs:
-      - job: Colors
-        displayName: 'Colors'
+      - job: Compile
+        displayName: 'Compile'
         dependsOn: [  ]
         steps:
           - task: CmdLine@2
             inputs:
-              script: './build.cmd Colors --skip'
-      - job: Compile
-        displayName: 'Compile'
-        dependsOn: [ Colors ]
-        steps:
-          - task: CmdLine@2
-            inputs:
-              script: './build.cmd Compile --skip'
+              script: './build.cmd Variables Colors Compile --skip'
   - stage: windows_latest
     displayName: 'windows-latest'
     dependsOn: [  ]
     pool:
       vmImage: 'windows-latest'
     jobs:
-      - job: Colors
-        displayName: 'Colors'
+      - job: Compile
+        displayName: 'Compile'
         dependsOn: [  ]
         steps:
           - task: CmdLine@2
             inputs:
-              script: './build.cmd Colors --skip'
-      - job: Compile
-        displayName: 'Compile'
-        dependsOn: [ Colors ]
-        steps:
-          - task: CmdLine@2
-            inputs:
-              script: './build.cmd Compile --skip'
+              script: './build.cmd Variables Colors Compile --skip'
   - stage: ubuntu_latest
     displayName: 'ubuntu-latest'
     dependsOn: [  ]
     pool:
       vmImage: 'ubuntu-latest'
     jobs:
-      - job: Colors
-        displayName: 'Colors'
+      - job: Compile
+        displayName: 'Compile'
         dependsOn: [  ]
         steps:
           - task: CmdLine@2
             inputs:
-              script: './build.cmd Colors --skip'
-      - job: Compile
-        displayName: 'Compile'
-        dependsOn: [ Colors ]
-        steps:
-          - task: CmdLine@2
-            inputs:
-              script: './build.cmd Compile --skip'
+              script: './build.cmd Variables Colors Compile --skip'
