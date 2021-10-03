@@ -141,7 +141,7 @@ partial class Build
             [ConsoleThemeStyle.LevelVerbose] = "\u001B[90m",
             [ConsoleThemeStyle.LevelDebug] = "\u001B[97m",
             [ConsoleThemeStyle.LevelInformation] = "\u001b[36;1m",
-            [ConsoleThemeStyle.LevelWarning] = "\u001b[91;1m",
+            [ConsoleThemeStyle.LevelWarning] = "\u001b[33;1m",
             [ConsoleThemeStyle.LevelError] = "\u001B[31;1m",
             [ConsoleThemeStyle.LevelFatal] = "\u001B[41;1m"
         });

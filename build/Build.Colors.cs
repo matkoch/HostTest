@@ -13,23 +13,24 @@ partial class Build
             for (var i = 30; i < 47; i++)
                 Console.Write($"{Esc}{i}m{i}  {Reset} ");
             Console.WriteLine();
-            for (var i = 90; i < 107; i++)
-                Console.Write($"{Esc}{i}m{i}  {Reset} ");
-            Console.WriteLine();
             for (var i = 30; i < 47; i++)
                 Console.Write($"{Esc}{i};1m{i};1{Reset} ");
             Console.WriteLine();
-            for (var i = 90; i < 107; i++)
-                Console.Write($"{Esc}{i};1m{i};1{Reset} ");
-            Console.WriteLine();
             for (var i = 30; i < 47; i++)
-                Console.Write($"{Esc}{i};2m{i};2{Reset} ");
-            Console.WriteLine();
-            for (var i = 90; i < 107; i++)
                 Console.Write($"{Esc}{i};2m{i};2{Reset} ");
             Console.WriteLine();
             for (var i = 30; i < 47; i++)
                 Console.Write($"{Esc}{i};3m{i};2{Reset} ");
+            Console.WriteLine();
+
+            for (var i = 90; i < 107; i++)
+                Console.Write($"{Esc}{i}m{i}  {Reset} ");
+            Console.WriteLine();
+            for (var i = 90; i < 107; i++)
+                Console.Write($"{Esc}{i};1m{i};1{Reset} ");
+            Console.WriteLine();
+            for (var i = 90; i < 107; i++)
+                Console.Write($"{Esc}{i};2m{i};2{Reset} ");
             Console.WriteLine();
             for (var i = 90; i < 107; i++)
                 Console.Write($"{Esc}{i};3m{i};2{Reset} ");

@@ -66,6 +66,9 @@ namespace ConsoleApp1
         static void Main(string[] args)
         {
             var key = Console.ReadKey(intercept: true);
+            Console.WriteLine(key.Key);
+            Console.WriteLine(key.Modifiers);
+            Console.WriteLine(key.KeyChar);
             var password = AnsiConsole.Prompt(
                 new TextPrompt<string>("Enter [green]password[/]")
                     .PromptStyle("red")
