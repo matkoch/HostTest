@@ -149,16 +149,16 @@ class Build : NukeBuild
         new Dictionary<ConsoleThemeStyle, string>
         {
             [ConsoleThemeStyle.Text] = string.Empty,
-            [ConsoleThemeStyle.SecondaryText] = "\u001B[90m",
-            [ConsoleThemeStyle.TertiaryText] = "\u001B[90m", // timestamp
-            [ConsoleThemeStyle.Name] = "\u001b[34m",
+            [ConsoleThemeStyle.SecondaryText] = "\u001B[37;2m",
+            [ConsoleThemeStyle.TertiaryText] = "\u001B[37;2m", // timestamp
+            [ConsoleThemeStyle.Name] = "\u001b[37;1m",
             [ConsoleThemeStyle.Invalid] = "\u001b[35m",
             [ConsoleThemeStyle.Null] = "\u001b[33m",
             [ConsoleThemeStyle.Number] = "\u001b[33m",
             [ConsoleThemeStyle.String] = "\u001b[33m",
             [ConsoleThemeStyle.Boolean] = "\u001b[33m",
             [ConsoleThemeStyle.Scalar] = "\u001b[33m",
-            [ConsoleThemeStyle.LevelVerbose] = "\u001B[90m",
+            [ConsoleThemeStyle.LevelVerbose] = "\u001B[37;2m",
             [ConsoleThemeStyle.LevelDebug] = "\u001B[98m",
             [ConsoleThemeStyle.LevelInformation] = "\u001b[36m",
             [ConsoleThemeStyle.LevelWarning] = "\u001b[33m",
@@ -172,7 +172,7 @@ class Build : NukeBuild
             [ConsoleThemeStyle.Text] = string.Empty,
             [ConsoleThemeStyle.SecondaryText] = "\u001B[90m",
             [ConsoleThemeStyle.TertiaryText] = "\u001B[90m", // timestamp
-            [ConsoleThemeStyle.Name] = "\u001b[34m",
+            [ConsoleThemeStyle.Name] = "\u001b[37;1m",
             [ConsoleThemeStyle.Invalid] = "\u001b[35m",
             [ConsoleThemeStyle.Null] = "\u001b[33m",
             [ConsoleThemeStyle.Number] = "\u001b[33m",
@@ -182,7 +182,7 @@ class Build : NukeBuild
             [ConsoleThemeStyle.LevelVerbose] = "\u001B[90m",
             [ConsoleThemeStyle.LevelDebug] = "\u001B[97m",
             [ConsoleThemeStyle.LevelInformation] = "\u001b[36;1m",
-            [ConsoleThemeStyle.LevelWarning] = "\u001b[33;1m",
+            [ConsoleThemeStyle.LevelWarning] = "\u001b[91;1m",
             [ConsoleThemeStyle.LevelError] = "\u001B[31;1m",
             [ConsoleThemeStyle.LevelFatal] = "\u001B[41;1m"
         });
