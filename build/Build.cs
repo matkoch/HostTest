@@ -4,6 +4,7 @@ using Nuke.Common;
 using Nuke.Common.CI.AppVeyor;
 using Nuke.Common.CI.AzurePipelines;
 using Nuke.Common.CI.GitHubActions;
+using Nuke.Common.CI.SpaceAutomation;
 using Nuke.Common.CI.TeamCity;
 using Nuke.Common.Execution;
 using Nuke.Common.Utilities;
@@ -31,6 +32,11 @@ using Nuke.Common.Utilities.Collections;
 [TeamCity(
     VcsTriggeredTargets = new[] { nameof(Compile) },
     NonEntryTargets = new[] { nameof(Variables), nameof(Colors) })]
+[SpaceAutomation(
+    name: "continuous",
+    image: "mcr.microsoft.com/dotnet/sdk:5.0",
+    OnPush = true,
+    InvokedTargets = new[] { nameof(Compile) })]
 [ConfigureLogging]
 partial class Build : NukeBuild
 {
