@@ -18,13 +18,13 @@ partial class Build
             if (Host is GitHubActions actions)
             {
                 var actionsGitHubEventPath = (AbsolutePath)actions.GitHubEventPath;
-                // var readOnlyCollection = actionsGitHubEventPath.Parent.GlobFiles("**/*.*");
-                // foreach (var absolutePath in readOnlyCollection)
-                // {
-                //     Console.WriteLine("==========");
-                //     Console.WriteLine(absolutePath);
-                //     Console.WriteLine(File.ReadAllText(absolutePath));
-                // }
+                var readOnlyCollection = actionsGitHubEventPath.Parent.GlobFiles("**/*.*");
+                foreach (var absolutePath in readOnlyCollection)
+                {
+                    Console.WriteLine("==========");
+                    Console.WriteLine(absolutePath);
+                    Console.WriteLine(File.ReadAllText(absolutePath));
+                }
 
                 var content = File.ReadAllText(actions.GitHubEventPath);
                 var event2 = JsonConvert.DeserializeObject<JObject>(content);
