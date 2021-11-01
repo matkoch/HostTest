@@ -10,6 +10,7 @@ using Nuke.Common.Execution;
 using Nuke.Common.Utilities;
 using Nuke.Common.Utilities.Collections;
 
+
 [CheckBuildProjectConfigurations]
 [AppVeyor(
     AppVeyorImage.UbuntuLatest,
