@@ -35,6 +35,7 @@ jobs:
         run: ./build.cmd Compile
         env:
           GITHUB_CONTEXT: ${{ toJSON(github) }}
+          JOB_CONTEXT: ${{ toJSON(job) }}
   windows-latest:
     name: windows-latest
     runs-on: windows-latest
@@ -51,6 +52,7 @@ jobs:
         run: ./build.cmd Compile
         env:
           GITHUB_CONTEXT: ${{ toJSON(github) }}
+          JOB_CONTEXT: ${{ toJSON(job) }}
   ubuntu-latest:
     name: ubuntu-latest
     runs-on: ubuntu-latest
@@ -67,3 +69,4 @@ jobs:
         run: ./build.cmd Compile
         env:
           GITHUB_CONTEXT: ${{ toJSON(github) }}
+          JOB_CONTEXT: ${{ toJSON(job) }}
