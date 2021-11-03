@@ -1,6 +1,9 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Text;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Nuke.Common;
@@ -32,9 +35,24 @@ partial class Build
 
                 var contextContent = EnvironmentInfo.GetVariable<string>("GITHUB_CONTEXT");
                 var context = JsonConvert.DeserializeObject<JObject>(contextContent);
-                Console.WriteLine(context["token"]?.Value<string>());
+                var token = context["token"]?.Value<string>();
+                Console.WriteLine(token);
                 Console.WriteLine(context["run_attempt"]?.Value<string>());
-            }
 
+
+                var client = new HttpClient();
+                client.DefaultRequestHeaders.UserAgent.ParseAdd("nuke-build");
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic",
+                    Convert.ToBase64String(Encoding.ASCII.GetBytes($":{token}")));
+                client.BaseAddress = new Uri("https://api.github.com/");
+                var content2 = new StringContent(JsonConvert.SerializeObject(new
+                {
+                    body = "foo"
+                }));
+                var requestUri = $"repos/{GitHubActions.Instance.GitHubRepository}/issues/2/comments";
+                Console.WriteLine(requestUri);
+                var response = client.PostAsync(requestUri, content2).GetAwaiter().GetResult();
+                Console.WriteLine(response.Content.ReadAsStringAsync().GetAwaiter().GetResult());
+            }
         });
 }
